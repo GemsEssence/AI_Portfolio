@@ -1,0 +1,17 @@
+{
+  "shoe": {
+    "name": "Shoe",
+    "description": "Footwear for walking, running, and sports activities.",
+    "question": "What type of shoe are you looking for?"
+  },
+  "bottle": {
+    "name": "Bottle",
+    "description": "Container for liquids like water, juice, or sports drinks.",
+    "question": "Do you prefer plastic or stainless steel bottles?"
+  },
+  "backpack": {
+    "name": "Backpack",
+    "description": "A bag carried on your back for travel or school.",
+    "question": "What size or brand are you looking for?"
+  }
+}

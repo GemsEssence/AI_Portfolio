@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Visionary Object Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f6fa;
+            color: #2f3640;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            background-color: #273c75;
+            color: white;
+            padding: 20px 0;
+            margin: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            flex: 1;
+        }
+
+        button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #44bd32;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #4cd137;
+        }
+
+        #camera {
+            display: block;
+            margin: 0 auto 10px auto;
+            border-radius: 10px;
+            border: 2px solid #dcdde1;
+        }
+
+        #results {
+            margin-top: 20px;
+        }
+
+        .object-card {
+            background: #f1f2f6;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .object-card h3 {
+            margin: 0 0 10px 0;
+            color: #40739e;
+        }
+
+        .object-card p {
+            margin: 4px 0;
+        }
+
+        .question {
+            font-style: italic;
+            color: #e84118;
+            margin-top: 20px;
+        }
+
+        .camera-controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .camera-controls button {
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Visionary Object Detection</h1>
+
+    <div class="container">
+        <!-- Upload Form -->
+        <form id="uploadForm">
+            <input type="file" id="fileInput" name="file" accept="image/*">
+            <button type="submit">Upload Image</button>
+        </form>
+
+        <!-- Real-Time Camera Detection -->
+        <h2 style="text-align:center;">Real-Time Camera Detection</h2>
+        <video id="camera" width="640" height="480" autoplay></video>
+        <div class="camera-controls">
+            <button id="startCamera">Start Camera</button>
+            <button id="stopCamera">Stop Camera</button>
+        </div>
+
+        <!-- Detection Results -->
+        <div id="results"></div>
+    </div>
+
+    <script>
+        async function handleForm(formId, inputId, endpoint) {
+            const form = document.getElementById(formId);
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const fileInput = document.getElementById(inputId);
+                const formData = new FormData();
+                formData.append(fileInput.name, fileInput.files[0]);
+
+                const response = await fetch(endpoint, {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+                displayResults(data);
+            });
+        }
+
+        handleForm("uploadForm", "fileInput", "/upload-image");
+
+        // Real-time camera detection
+        let video = document.getElementById("camera");
+        let resultsDiv = document.getElementById("results");
+        let stream;
+        let interval;
+
+        document.getElementById("startCamera").onclick = async () => {
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+
+            interval = setInterval(async () => {
+                let canvas = document.createElement("canvas");
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext("2d").drawImage(video, 0, 0);
+                let dataUrl = canvas.toDataURL("image/jpeg");
+                let blob = await (await fetch(dataUrl)).blob();
+                let formData = new FormData();
+                formData.append("frame", blob, "frame.jpg");
+
+                const response = await fetch("/camera-feed", {
+                    method: "POST",
+                    body: formData
+                });
+                const data = await response.json();
+                displayResults(data);
+            }, 1000);
+        };
+
+        document.getElementById("stopCamera").onclick = () => {
+            clearInterval(interval);
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+        };
+
+        // Function to display detection results
+     // Function to display detection results
+function displayResults(data) {
+    resultsDiv.innerHTML = ""; // Clear old results
+    const seenObjects = new Set(); // Track displayed objects
+
+    if (data.objects.length === 0) {
+        resultsDiv.innerHTML = `<p class="question">No objects detected. ${data.question}</p>`;
+        return;
+    }
+
+    data.objects.forEach(obj => {
+        const objNameLower = obj.name.toLowerCase();
+        if (seenObjects.has(objNameLower)) return; // Skip duplicate
+        seenObjects.add(objNameLower);
+
+        const card = document.createElement("div");
+        card.className = "object-card";
+        card.innerHTML = `
+            <h3>${obj.name}</h3>
+            <p><strong>Description:</strong> ${obj.description}</p>
+            <p><strong>Usage:</strong> ${obj.usage}</p>
+            <p><strong>Benefits:</strong> ${obj.benefits}</p>
+            <p><strong>Origin:</strong> ${obj.origin}</p>
+            <p><strong>Summary:</strong> ${obj.summary}</p>
+        `;
+        resultsDiv.appendChild(card);
+    });
+
+    const questionEl = document.createElement("p");
+    questionEl.className = "question";
+    questionEl.textContent = data.question;
+    resultsDiv.appendChild(questionEl);
+}
+
+    </script>
+</body>
+</html>
