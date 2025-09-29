@@ -1,0 +1,167 @@
+LegalMind/
+├─ backend/
+│  ├─ utils.py
+├─ frontend/
+│  ├─ index.html
+│  ├─ style.css
+│  └─ script.js
+├─ rawdata/
+├─ app.py
+├─ requirments.txt
+├─ venv
+├─ Dickerfile
+├─ .gitignore
+
+
+
+RAG PIPELINE FOR Document Analysis
+
+
+User Query
+     |
+     v
+ +-----------+
+ |  Classify | --> Casual Chat? ---> LLM only
+ +-----------+
+     |
+     v
+ +-----------+
+ |  Embed    |  <--- Chunks are embedded here
+ +-----------+
+     |
+     v
+ +-----------+
+ |  Retrieve | ---> FAISS or other vector DB
+ +-----------+
+     |
+     v
+ +-----------+
+ |   LLM     | <-- context chunks from retrieved embeddings
+ +-----------+
+     |
+     v
+ +-----------+
+ | Post-Proc | <-- map answer to source/page
+ +-----------+
+     |
+     v
+ User Output
+
+
+---------------------------- Description what i can do -----------------------------------------
+
+1️⃣ PDF Upload & Storage
+
+User uploads a PDF via your frontend (index.html → /upload endpoint).
+Backend:
+
+Read the PDF.
+Split it into chunks (e.g., 300–500 tokens each) — this is where chunking happens.
+Store chunks and metadata (page, source, chunk index) in memory or a database.
+Optional: Precompute embeddings here.
+
+Key files/functions:
+
+chunks = []        # store text chunks
+metas = []         # store page, source, etc.
+embeddings = []    # store vector embeddings (for FAISS)
+
+2️⃣ Classify Query
+
+When user asks a question (/ask endpoint), classify it to decide whether it is:
+
+Casual chat → send directly to LLM without document context
+Legal/Document query → proceed to retrieval
+
+Example:
+
+label = classify_query(query)
+if label == "casual chat":
+    return _generate_answer(casual_prompt), []
+
+
+3️⃣ Embedding & Vector Search
+
+Convert query into an embedding using SentenceTransformer or any embedding model.
+
+Normalize embeddings if using FAISS: faiss.normalize_L2()
+Search the FAISS index for top-k similar chunks.
+
+Key code:
+
+q_emb = emb_model.encode([query], convert_to_numpy=True)
+faiss.normalize_L2(q_emb)
+D, I = index.search(q_emb, top_k)
+
+
+D = similarity scores
+I = indexes of matching chunks
+
+
+
+4️⃣ Retrieve Relevant Chunks
+
+Loop through results:
+
+Filter by RELEVANCE_THRESHOLD
+Stop if MAX_TOKENS_CONTEXT is reached
+Keep text, source, page, score, etc.
+
+retrieved.append({
+    "text": chunk_text,
+    "source": metas[idx]["source"],
+    "page": metas[idx]["page"],
+    "score": float(score)
+})
+
+5️⃣ Generate Answer using LLM
+
+Build a prompt using retrieved chunks (or just the question if casual chat).
+Pass prompt to your local LLM.
+Decode the output.
+ans = _generate_answer(prompt)
+return ans, retrieved
+
+
+If no relevant chunk is found, return "❌ No sufficiently relevant context found".
+
+6️⃣ Post-Processing
+
+In /ask endpoint, format the response:
+Show answer
+Map retrieved chunks to source/page
+Optional: Clean up answer, truncate chunk previews, handle empty/insufficient context.
+retrieval = [
+    {"source": r["source"], "page": r["page"], "text": r["text"][:200]+"..."} 
+    for r in retrieved
+]
+
+7️⃣ Frontend (Chat UI)
+
+Display question → show user message
+Show “Thinking…” while LLM generates answer
+Display bot answer + sources
+Animate loading & dynamic title for better UX
+
+Key files:
+index.html → structure
+style.css → styles & animations
+script.js → async fetch, display messages, loading, errors
+
+8️⃣ Optional Enhancements
+
+Better chunking strategies:
+Split by sentences, paragraphs, or headings
+Handle random input: detect nonsense queries → return “No relevant info found”
+
+Dynamic UI:
+Gradient title, bouncing emoji, message fade-in
+
+Source info, page numbers
+GPU acceleration: set device to cuda:0 for faster LLM inference
+
+✅ Overall Flow
+User Uploads PDF → Chunk → Embed → FAISS Index
+User Asks Question → Classify → Embed → Retrieve → LLM → Post-process → Display
+
+

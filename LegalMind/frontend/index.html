@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Legal Assistant</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link 
+    rel="stylesheet" 
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  /></head>
+
+<body>
+    <div class="chat-container">
+        <h1 class="dynamic-title">
+            <i class="fas fa-robot"></i>Document Assistant
+        </h1>
+
+        <!-- 🔹 Upload Section -->
+        <div class="upload-section">
+            <form id="uploadForm" enctype="multipart/form-data">
+                <input type="file" id="fileInput" name="file" accept="application/pdf">
+                <button type="submit">Upload PDF</button>
+            </form>
+            <p id="upload-status"></p>
+        </div>
+
+        <!-- 🔹 Chat Section -->
+        <div id="chat-box" class="chat-box"></div>
+
+        <div class="input-area">
+            <input type="text" id="question" placeholder="Ask a question..."
+                onkeypress="if(event.key==='Enter'){askQuestion();}">
+            <button onclick="askQuestion()">Ask 💬</button>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>
