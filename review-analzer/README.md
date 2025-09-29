@@ -25,7 +25,20 @@ It extracts a **concise summary** and determines the **sentiment** (POSITIVE, NE
 
 ## 🚀 Setup & Installation  
 
-### 1️⃣ Clone the Repository  
-```sh
-git clone https://github.com/your-username/repo-name.git
-cd repo-name
+
+### 1️⃣ Create a virtual environment
+```bash
+python -m venv venv
+
+# Activate environment
+source venv/bin/activate        # Linux/macOS
+venv\Scripts\activate           # Windows
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run backend server
+python app.py
+
+---
+
