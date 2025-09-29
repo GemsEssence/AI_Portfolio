@@ -36,28 +36,43 @@ v
 v
 User Output
 
-##📂 Folder Structure
+
+---
+
+## 📂 Folder Structure
 
 LegalMind/
-├─ backend/           # Backend utilities
-│  └─ utils.py
-├─ frontend/          # Web interface
-│  ├─ index.html
-│  ├─ style.css
-│  └─ script.js
-├─ rawdata/           # PDFs to process
-├─ app.py             # FastAPI entrypoint
-├─ requirements.txt   # Python dependencies
-├─ venv/              # Virtual environment
+├─ backend/ # Backend utilities
+│ └─ utils.py
+├─ frontend/ # Web interface
+│ ├─ index.html
+│ ├─ style.css
+│ └─ script.js
+├─ rawdata/ # PDFs to process
+├─ app.py # FastAPI entrypoint
+├─ requirements.txt # Python dependencies
+├─ venv/ # Virtual environment
 ├─ Dockerfile
 ├─ .gitignore
 ├─ README.md
 
 
+---
 
-## 🚀 Run locally
+## 🚀 Run Locally
+
 ```bash
+# Create virtual environment
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Activate environment
+source venv/bin/activate        # Linux/macOS
+venv\Scripts\activate           # Windows
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Run backend server
 uvicorn app:app --reload
+
+---
