@@ -46,23 +46,23 @@ visionary_hub/
 
 🔧 Features
 
-Detect objects from uploaded images or real-time camera feed.
+    - Detect objects from uploaded images or real-time camera feed.
 
-Retrieve structured information for each detected object:
+    - Retrieve structured information for each detected object:
 
-Description
+    - Description
 
-Usage
+    - Usage
 
-Benefits
+    - Benefits
 
-Origin
+    - Origin
 
-Summary
+    - Summary
 
-Suggest follow-up questions for each detected object.
+    - Suggest follow-up questions for each detected object.
 
-Minimal frontend for interaction with FastAPI backend.
+    Minimal frontend for interaction with FastAPI backend.
 
 ⚙️ Setup Instructions
 1. Clone the repository
@@ -94,43 +94,43 @@ uvicorn app.orchestrator:app --reload
 
 7. Open in browser
 
-Visit: http://127.0.0.1:8000
+    - Visit: http://127.0.0.1:8000
 
-Upload Image: Upload any image to detect objects.
+    - Upload Image: Upload any image to detect objects.
 
-Use Camera: Detect objects in real-time using your webcam.
+   -  Use Camera: Detect objects in real-time using your webcam.
 
 📝 Notes
 
-app/ contains all FastAPI modules and business logic.
+    - app/ contains all FastAPI modules and business logic.
 
-static/ & templates/ manage frontend content.
+    - static/ & templates/ manage frontend content.
 
-data/ stores models and object mappings.
+    - data/ stores models and object mappings.
 
-tests/ is optional for unit tests.
+    - tests/ is optional for unit tests.
 
-.env handles configuration such as debug mode.
+    - .env handles configuration such as debug mode.
 
-requirements.txt includes all Python dependencies.
+    - requirements.txt includes all Python dependencies.
 
 ✅ Next Steps
 
-Add more object mappings in object_map.json for richer insights.
+    - Add more object mappings in object_map.json for richer insights.
 
-Expand frontend features for enhanced interactivity.
+    - Expand frontend features for enhanced interactivity.
 
-Write unit tests in tests/ for robust development.
+    - Write unit tests in tests/ for robust development.
 
-Deploy to cloud or local server for production use.
+    - Deploy to cloud or local server for production use.
 
 📚 References
 
-YOLOv8 Documentation
+    - YOLOv8 Documentation
 
-FastAPI Documentation
+    - FastAPI Documentation
 
-Wikipedia Python Library
+    - Wikipedia Python Library
 
 
 ---
