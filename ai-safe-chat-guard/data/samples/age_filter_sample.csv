@@ -1,0 +1,157 @@
+text,age_bucket,label
+"let's play with toys",7+,safe
+"there was a mild argument",13+,caution
+"graphic violence scene",18+,block
+"romance between teens",13+,caution
+"explicit sexual content",18+,block
+"funny cartoon show",7+,safe
+"kids playing hide and seek",7+,safe
+"gentle story about a puppy",7+,safe
+"funny clown show for children",7+,safe
+"basic shapes learning video",7+,safe
+"animated talking trains",7+,safe
+"cartoon family going on adventure",7+,safe
+"color learning with fruits",7+,safe
+"singing animals in a forest",7+,safe
+"happy kids drawing together",7+,safe
+"ABC alphabet rhymes",7+,safe
+"mild disagreement between teens",13+,caution
+"teen friendship breakup",13+,caution
+"school exam stress drama",13+,caution
+"jealousy among classmates",13+,caution
+"teen anxiety about grades",13+,caution
+"first crush story",13+,caution
+"peer pressure to skip school",13+,caution
+"teen conflict over social media",13+,caution
+"bullying at high school",13+,caution
+"romantic gestures between teens",13+,caution
+"violent stabbing scene",18+,block
+"graphic zombie attack",18+,block
+"intense hostage situation",18+,block
+"brutal car accident footage",18+,block
+"drug overdose depiction",18+,block
+"strong sexual themes",18+,block
+"domestic violence scene",18+,block
+"explicit strip club scene",18+,block
+"murder investigation with gore",18+,block
+"graphic execution scene",18+,block
+"playtime at kindergarten",7+,safe
+"magic carpet adventure cartoon",7+,safe
+"numbers counting video",7+,safe
+"kids exploring the zoo",7+,safe
+"farm animals teaching sounds",7+,safe
+"animated toy cars racing",7+,safe
+"simple bedtime lullabies",7+,safe
+"kids building sandcastles",7+,safe
+"cartoon superheroes fighting silly villains",7+,safe
+"educational ABC puzzle",7+,safe
+"teen skipping classes story",13+,caution
+"teen heartbreak after breakup",13+,caution
+"peer pressure to try smoking",13+,caution
+"cyberbullying via text messages",13+,caution
+"jealousy over popularity",13+,caution
+"friendship betrayal drama",13+,caution
+"teen cheating on exam",13+,caution
+"romantic hug between classmates",13+,caution
+"teen drama with rumors",13+,caution
+"stress from strict parents",13+,caution
+"graphic cannibalism description",18+,block
+"sexual exploitation scene",18+,block
+"gunfight with heavy bloodshed",18+,block
+"drug cartel execution",18+,block
+"extreme mutilation",18+,block
+"explicit pornographic scene",18+,block
+"graphic torture devices",18+,block
+"intense domestic abuse",18+,block
+"bloody horror film scene",18+,block
+"disturbing crime documentary",18+,block
+"kids playing with balloons",7+,safe
+"cartoon animals dancing",7+,safe
+"learning multiplication table",7+,safe
+"storybook about a princess",7+,safe
+"animated dinosaurs singing",7+,safe
+"fun day at the playground",7+,safe
+"nursery rhyme about stars",7+,safe
+"animated underwater adventure",7+,safe
+"simple science facts for kids",7+,safe
+"funny puppet show",7+,safe
+"teen social pressure to date",13+,caution
+"school sports rivalry story",13+,caution
+"drama about teen insecurities",13+,caution
+"crush rejection story",13+,caution
+"peer conflict over friendship",13+,caution
+"teen sneaking out at night",13+,caution
+"story about teen jealousy",13+,caution
+"teenagers arguing loudly",13+,caution
+"first love drama",13+,caution
+"stress from peer judgment",13+,caution
+"explicit gang violence",18+,block
+"graphic sexual assault scene",18+,block
+"murder shown in detail",18+,block
+"war crimes footage",18+,block
+"child abuse depiction",18+,block
+"torture chamber scene",18+,block
+"sexual fetish content",18+,block
+"graphic decapitation",18+,block
+"illegal drug production",18+,block
+"pornographic jokes",18+,block
+"cartoon duck adventure",7+,safe
+"kids learning colors",7+,safe
+"toy train story",7+,safe
+"animated playground fun",7+,safe
+"numbers and counting",7+,safe
+"storybook about sharing",7+,safe
+"animated robots dancing",7+,safe
+"kids singing animal songs",7+,safe
+"puppet animals playing",7+,safe
+"kids gardening story",7+,safe
+"teen social media obsession",13+,caution
+"drama about teen jealousy",13+,caution
+"teen sibling arguments",13+,caution
+"school rumors spreading",13+,caution
+"story about teen rivalry",13+,caution
+"teen heartbreak after rejection",13+,caution
+"teen trying alcohol secretly",13+,caution
+"peer pressure to steal",13+,caution
+"romantic note passing in class",13+,caution
+"jealousy over popularity in school",13+,caution
+"graphic horror torture",18+,block
+"sexual harassment depiction",18+,block
+"intense violent crime",18+,block
+"explicit adult nudity",18+,block
+"war battlefield gore",18+,block
+"torture and bloodshed",18+,block
+"dark disturbing adult film",18+,block
+"mutilation horror scene",18+,block
+"adult sexual innuendos",18+,block
+"disturbing murder investigation",18+,block
+"kids playing hopscotch",7+,safe
+"storybook with animals",7+,safe
+"funny cartoon zoo",7+,safe
+"basic math games",7+,safe
+"singing alphabet",7+,safe
+"animated moon adventure",7+,safe
+"cartoon superheroes teaching kindness",7+,safe
+"story about helping friends",7+,safe
+"playful dolphin cartoon",7+,safe
+"learning with blocks",7+,safe
+"teen romance triangle",13+,caution
+"peer drama over social status",13+,caution
+"teen cyberbullying story",13+,caution
+"friendship misunderstandings",13+,caution
+"school crush drama",13+,caution
+"teen prank gone too far",13+,caution
+"drama about lying to parents",13+,caution
+"story of teen jealousy",13+,caution
+"peer conflict during exams",13+,caution
+"romance between classmates",13+,caution
+"graphic murder description",18+,block
+"adult pornography content",18+,block
+"explicit striptease scene",18+,block
+"violent stabbing crime",18+,block
+"mutilated corpse imagery",18+,block
+"brutal gang shootout",18+,block
+"sexual intercourse description",18+,block
+"extreme gore in war movie",18+,block
+"rape depiction",18+,block
+"disturbing violent documentary",18+,block

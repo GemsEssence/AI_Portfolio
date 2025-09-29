@@ -1,0 +1,10 @@
+                   precision    recall  f1-score   support
+
+             none       0.95      1.00      0.97        19
+            none        0.00      0.00      0.00         1
+        self_harm       1.00      1.00      1.00        21
+suicidal_ideation       1.00      1.00      1.00        11
+
+         accuracy                           0.98        52
+        macro avg       0.74      0.75      0.74        52
+     weighted avg       0.96      0.98      0.97        52
