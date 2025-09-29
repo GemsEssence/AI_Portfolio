@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pandas
+torch
+transformers
+python-dotenv
+huggingface_hub
+langchain
+langchain-community
+langchain-huggingface
