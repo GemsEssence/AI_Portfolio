@@ -22,8 +22,8 @@ ai-portfolio/
 
 ## 1. Clone the repository
 ```bash
-git clone <your_repo_url>
-cd ai-portfolio
+git clone https://github.com/GemsEssence/AI_Portfolio.git
+cd AI_Portfolio
 ```
 ### 2. Activate the shared virtual environment
 ```bash
@@ -32,7 +32,7 @@ source shared_venv/bin/activate
 
 ### If shared_venv does not exist, create it:
 ```bash
-python3 -m venv shared_venv
+python -m venv shared_venv
 source shared_venv/bin/activate
 ```
 
