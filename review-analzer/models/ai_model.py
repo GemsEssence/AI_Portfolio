@@ -33,14 +33,17 @@ prompt = ChatPromptTemplate.from_messages([
 # Function to clean JSON output
 def clean_json(response):
     try:
-        json_str = re.sub(r'```json|```', '', response.content.strip())
-        print(json_str)
+        json_str = response.content.strip()
+        # Remove markdown or custom tags
+        json_str = re.sub(r'```json|```|\[ASS\]|\[/ASS\]|\[INST\]|\[/INST\]', '', json_str)
+        json_str = json_str.strip()
         return json.loads(json_str)
     except json.JSONDecodeError:
-        match = re.search(r'\{.*?\}', json_str, re.DOTALL)
+        match = re.search(r'\{.*\}', json_str, re.DOTALL)
         if match:
-            return json.loads(match.group())  # Extract JSON
+            return json.loads(match.group())
         return {"error": "Invalid JSON response"}
+
 
 # Define processing pipeline
 chain = prompt | model | clean_json

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Personalized Shopping Recommendations</title>
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+    <h1>Personalized Shopping Recommendations</h1>
+
+    <div>
+        <button onclick="showExistingCustomer()">I have a Customer ID</button>
+        <button onclick="showNewCustomer()">I'm a New Customer</button>
+    </div>
+
+    <!-- Existing customer form -->
+    <div id="existing-form" style="display: none;">
+        <h2>Enter your Customer ID</h2>
+        <input type="text" id="customer-id" placeholder="Customer ID"/>
+        <button onclick="fetchRecommendations()">Get Recommendations</button>
+    </div>
+
+    <!-- New customer form -->
+    <div id="new-form" style="display: none;">
+        <h2>Enter your details</h2>
+        <label>Age: <input type="number" id="age" /></label><br/>
+        
+        <label>Gender:
+            <select id="gender">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+        </label><br/>
+
+        <label>Customer Segment:
+            <select id="segment">
+                <option value="New Visitor">New Visitor</option>
+                <option value="Occasional Shopper">Occasional Shopper</option>
+                <option value="Frequent Buyer">Frequent Buyer</option>
+            </select>
+        </label><br/>
+
+        <button onclick="fetchNewRecommendations()">Get Recommendations</button>
+    </div>
+
+    <div id="recommendations"></div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

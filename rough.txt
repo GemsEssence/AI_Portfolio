@@ -1,0 +1,38 @@
+ai_projects/                                ← Parent folder for all your AI projects
+│
+├── ai_interview_app/                        ← Flask/FastAPI project
+│   ├── main.py
+│   
+│
+├── ai_safe_chat_guard/                      ← Flask/FastAPI project
+│   ├── main.py
+│  
+│
+├── fashion_search_agent/                     ← Flask/FastAPI project
+│   ├── main.py
+│   └
+│
+├── legalMind/                               ← Flask/FastAPI project
+│   ├── main.py
+│   
+│
+├── Object_detection/                        ← FastAPI project
+│   ├── main.py
+│  
+│
+├── Personalized_Shopping_recommendation/   ← FastAPI project
+│   ├── main.py
+│   
+│
+├── review_analyzer/                         ← Flask project
+│   ├── main.py
+│   └
+│
+├── ai_project_hub/                          ← Dashboard app (FastAPI)
+│   ├── main.py                              ← Dashboard backend
+│                                ← Optional, for dashboard dependencies
+│   └── templates/
+│       └── index.html                        ← Dashboard HTML with cards
+│
+└── run_all.sh                               ← Launcher script to start everything
+├── shared_venv/ 

@@ -1,0 +1,359 @@
+Final Folder Structure (for reference)
+personalized-shopping-recommendation/
+├── backend/
+│   ├── data/
+│   │   ├── customer_data_collection.csv
+│   │   └── product_recommendation_data.csv
+│   ├── models/
+│   │   └── recommendation_model.py
+│   ├── utils/
+│   │   └── preprocessing.py
+│   ├── main.py
+│   ├── requirements.txt
+│   ├── .env
+│   └── README.md
+├── frontend/
+│   ├── index.html
+│   ├── styles.css
+│   └── script.js
+├── README.md
+└── .gitignore
+
+✅ 1. backend/requirements.txt
+fastapi
+uvicorn
+pandas
+torch
+transformers
+python-dotenv
+
+
+Run this with:
+
+pip install -r backend/requirements.txt
+
+✅ 2. backend/utils/preprocessing.py
+import torch
+
+def encode_gender(gender):
+    mapping = {'Male': 0, 'Female': 1, 'Other': 2}
+    return mapping.get(gender, 2)
+
+def encode_segment(segment):
+    mapping = {'New Visitor': 0, 'Occasional Shopper': 1, 'Frequent Buyer': 2}
+    return mapping.get(segment, 0)
+
+def normalize_price(price):
+    return price / 5000  # Assuming max price is 5000
+
+def normalize_rating(rating):
+    return rating / 5  # Assuming max rating is 5
+
+def interaction_score(browsing_list, product_category):
+    matches = sum(1 for item in browsing_list if item == product_category)
+    return matches / max(len(browsing_list), 1)
+
+def process_customer(customer):
+    age_norm = customer['Age'] / 100
+    gender = encode_gender(customer['Gender'])
+    segment = encode_segment(customer['Customer_Segment'])
+    return torch.tensor([age_norm, gender, segment], dtype=torch.float)
+
+def process_product(product):
+    price = normalize_price(product['Price'])
+    rating = normalize_rating(product['Product_Rating'])
+    return torch.tensor([price, rating], dtype=torch.float)
+
+✅ 3. backend/models/recommendation_model.py
+import pandas as pd
+import torch
+from utils.preprocessing import process_customer, process_product, interaction_score
+import random
+import ast
+
+class RecommendationModel:
+    def __init__(self):
+        self.customers = pd.read_csv('backend/data/customer_data_collection.csv')
+        self.products = pd.read_csv('backend/data/product_recommendation_data.csv')
+
+    def recommend(self, customer_id):
+        customer = self.customers[self.customers['Customer_ID'] == customer_id].iloc[0]
+        
+        # Process customer features
+        customer_features = process_customer(customer)
+        
+        recommendations = []
+        for _, product in self.products.iterrows():
+            # Process product features
+            product_features = process_product(product)
+            
+            # Interaction feature: browsing history vs product category
+            browsing_list = ast.literal_eval(customer['Browsing_History'])
+            score = interaction_score(browsing_list, product['Category'])
+            
+            # Combine features into a score (this is a simple dot product plus interaction)
+            similarity = torch.dot(customer_features, product_features) + score
+            
+            recommendations.append({
+                "product": product,
+                "similarity": similarity.item()
+            })
+        
+        # Sort by similarity descending and pick top 3
+        recommendations = sorted(recommendations, key=lambda x: x['similarity'], reverse=True)
+        
+        top_recommendations = []
+        for rec in recommendations[:3]:
+            product = rec['product']
+            top_recommendations.append({
+                "name": f"{product['Category']} - {product['Subcategory']}",
+                "category": product['Category'],
+                "price": product['Price'],
+                "brand": product['Brand']
+            })
+        
+        return top_recommendations
+
+✅ 4. backend/main.py
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import List
+from transformers import pipeline
+from models.recommendation_model import RecommendationModel
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+rec_model = RecommendationModel()
+generator = pipeline('text-generation', model='gpt2')
+
+class Product(BaseModel):
+    name: str
+    category: str
+    price: float
+    brand: str
+    explanation: str
+
+@app.get("/recommendations/{customer_id}", response_model=List[Product])
+def get_recommendations(customer_id: str):
+    products = rec_model.recommend(customer_id)
+    response = []
+    for p in products:
+        explanation = generator(
+            f"Why recommend {p['name']} to the customer?",
+            max_length=50,
+            num_return_sequences=1
+        )[0]['generated_text']
+        response.append(Product(
+            name=p["name"],
+            category=p["category"],
+            price=p["price"],
+            brand=p["brand"],
+            explanation=explanation
+        ))
+    return response
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("backend.main:app", host="127.0.0.1", port=8000, reload=True)
+
+✅ 5. frontend/index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Personalized Shopping Recommendations</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <h1>Recommended Products</h1>
+    <div id="recommendations"></div>
+    <script src="script.js"></script>
+</body>
+</html>
+
+✅ 6. frontend/styles.css
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f4f4f4;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+#recommendations {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.recommendation {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    width: 250px;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+}
+
+.recommendation h2 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.recommendation p {
+    font-size: 0.9em;
+    margin: 5px 0;
+}
+
+.buttons {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+✅ 7. frontend/script.js
+document.addEventListener("DOMContentLoaded", () => {
+    fetchRecommendations("C1000"); // Example customer ID
+});
+
+function fetchRecommendations(customerId) {
+    fetch(`http://127.0.0.1:8000/recommendations/${customerId}`)
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById("recommendations");
+            container.innerHTML = "";
+
+            data.forEach(product => {
+                const div = document.createElement("div");
+                div.className = "recommendation";
+                div.innerHTML = `
+                    <h2>${product.name}</h2>
+                    <p>Category: ${product.category}</p>
+                    <p>Price: ₹${product.price}</p>
+                    <p>Brand: ${product.brand}</p>
+                    <p><strong>Why recommended:</strong> ${product.explanation}</p>
+                    <div class="buttons">
+                        <button class="like">Like</button>
+                        <button class="save">Save for Later</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        })
+        .catch(error => console.error("Error fetching recommendations:", error));
+}
+
+✅ 8. .gitignore
+__pycache__/
+.env
+backend/data/
+*.pyc
+
+✅ Final Instructions to Run the Project Locally
+
+Create the folder structure as shown above.
+
+Place the CSV files in backend/data/.
+
+Install dependencies:
+
+pip install -r backend/requirements.txt
+
+
+Run the FastAPI server:
+
+uvicorn backend.main:app --reload
+
+
+Open frontend/index.html in your browser.
+
+The dashboard will show recommendations for customer C1000.
+
+You now have:
+
+✔ A modular folder structure ready for feature engineering
+✔ Encoding, normalization, and interaction scoring implemented
+✔ A working FastAPI backend serving recommendations
+✔ Hugging Face generating explanations
+✔ A simple but polished HTML/CSS/JS frontend
+
+Let me know if you want help running this, improving the model, or preparing it for deployment! 📂📊🤖🚀
+
+You said:
+so virtual environment where i can create inside backend or root
+ChatGPT said:
+
+✅ You should create the virtual environment inside the backend/ folder, because all Python-related dependencies, code, and configurations are inside that folder. This keeps the environment organized and avoids mixing Python setup with frontend files.
+
+✅ Recommended location
+personalized-shopping-recommendation/
+├── backend/
+│   ├── venv/                ← Virtual environment created here
+│   ├── data/
+│   ├── models/
+│   ├── utils/
+│   ├── main.py
+│   ├── requirements.txt
+│   ├── .env
+│   └── README.md
+├── frontend/
+├── README.md
+└── .gitignore
+
+✅ Steps to create it inside backend/
+
+Navigate to the backend/ folder:
+
+cd personalized-shopping-recommendation/backend
+
+
+Create the virtual environment:
+
+python -m venv venv
+
+
+Activate the virtual environment:
+
+On Windows:
+
+venv\Scripts\activate
+
+
+On macOS/Linux:
+
+source venv/bin/activate
+
+
+Install dependencies:
+
+pip install -r requirements.txt
+
+
+Run the app:
+
+uvicorn main:app --reload

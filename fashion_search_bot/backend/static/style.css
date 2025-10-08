@@ -1,0 +1,118 @@
+/* General body */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f2f2f2;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+  }
+  
+  /* Chat container */
+  .chat-container {
+    width: 400px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Header */
+  .chat-container h2 {
+    background-color: #ff4081;
+    color: white;
+    margin: 0;
+    padding: 15px;
+    text-align: center;
+    font-size: 18px;
+  }
+  
+  /* Chat messages box */
+  .chat-box {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    height: 500px;
+  }
+  
+  /* User & bot messages */
+  .message {
+    margin: 10px 0;
+    padding: 10px 15px;
+    border-radius: 15px;
+    max-width: 80%;
+    word-wrap: break-word;
+  }
+  
+  /* User messages */
+  .message.user {
+    background-color: #e1ffc7;
+    align-self: flex-end;
+  }
+  
+  /* Bot messages */
+  .message.bot {
+    background-color: #f0f0f0;
+    align-self: flex-start;
+  }
+  
+  /* Input area */
+  .input-area {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    gap: 10px;
+  }
+  
+  /* File input */
+  .input-area input[type="file"] {
+    flex: 1;
+    padding: 5px;
+  }
+  
+  /* Button */
+  .input-area button {
+    padding: 6px 12px;
+    background-color: #ff4081;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  /* Product card inside chat */
+  .product-card {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    background-color: #fff0f5;
+    border-radius: 10px;
+    align-items: center;
+    box-shadow: 0px 2px 5px rgba(0,0,0,0.05);
+  }
+  
+  .product-card img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+  
+  .product-card b {
+    font-size: 14px;
+  }
+  
+  .product-card a {
+    display: block;
+    font-size: 13px;
+    color: #ff4081;
+    text-decoration: none;
+    margin-top: 2px;
+  }
+  
+  .product-card a:hover {
+    text-decoration: underline;
+  }
+  

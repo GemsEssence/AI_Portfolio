@@ -8,7 +8,7 @@ It generates concise technical questions, receives candidate answers, and provid
 ## 📂 Project Structure
 
 ```bash
-ai_interview/
+ai_interview_app/
 ├── app.py                  # FastAPI backend with LLM integration
 ├── templates/
 │   └── index.html          # Frontend UI

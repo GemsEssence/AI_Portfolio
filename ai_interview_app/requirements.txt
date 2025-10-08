@@ -30,4 +30,5 @@ langchain==0.2.14
 langchain-community==0.2.11
 groq==0.31.1
 python-multipart
+langchain_groq
 
