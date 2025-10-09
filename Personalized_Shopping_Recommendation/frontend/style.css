@@ -1,55 +1,198 @@
+/* --- General Styles --- */
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
 }
 
-h1 {
+.container {
+    width: 100%;
+    max-width: 1400px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
     text-align: center;
+}
+
+/* --- Headings --- */
+h1 {
+    margin-bottom: 25px;
     color: #333;
 }
 
+h2 {
+    margin-bottom: 15px;
+    color: #444;
+}
+
+/* --- Buttons --- */
+.btns-heading {
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.btns-heading button {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: white;
+    transition: all 0.25s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.primary-btn {
+    background: linear-gradient(135deg, #ff4081, #ff79a6);
+}
+
+.primary-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.secondary-btn {
+    background: linear-gradient(135deg, #007bff, #339cff);
+}
+
+.secondary-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* --- Forms --- */
+.form-container {
+    display: none; /* Show only when selected */
+    margin: 20px auto;
+    background-color: #fdfdfd;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    text-align: left;
+}
+
+.form-container .form-group {
+    margin-bottom: 15px;
+}
+
+.form-container label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.form-container input,
+.form-container select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.form-container input:focus,
+.form-container select:focus {
+    border-color: #007BFF;
+    box-shadow: 0 0 5px rgba(0,123,255,0.3);
+}
+
+.form-container button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background-color: #28a745;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.form-container button:hover {
+    background-color: #218838;
+}
+
+/* --- Recommendations --- */
 #recommendations {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
     justify-content: center;
+    margin-top: 25px;
 }
 
 .recommendation {
     background-color: white;
     border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 15px;
-    width: 250px;
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
-}
-
-.recommendation h2 {
-    font-size: 1.2em;
-    margin-bottom: 10px;
+    border-radius: 12px;
+    padding: 20px;
+    width: 220px;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.08);
+    text-align: left;
 }
 
 .recommendation p {
-    font-size: 0.9em;
     margin: 5px 0;
+    font-size: 0.95rem;
 }
 
-.buttons {
-    margin-top: 10px;
-    display: flex;
-    gap: 10px;
+/* --- Responsive --- */
+@media (max-width: 500px) {
+    .btns-heading {
+        flex-direction: column;
+    }
+    .form-container {
+        width: 90%;
+        padding: 20px;
+    }
+    .recommendation {
+        width: 90%;
+    }
+}
+/* --- AI Recommendation Cards --- */
+.ai-card {
+    background: linear-gradient(145deg, #fdf0ff, #fff0f5);
+    border-radius: 16px;
+    padding: 20px;
+    width: 240px;
+    box-shadow: 0 8px 25px rgba(255, 64, 129, 0.3);
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.5s forwards;
 }
 
-button {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007BFF;
-    color: whit e;
-    cursor: pointer;
+.ai-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(255, 64, 129, 0.5);
 }
 
-button:hover {
-    background-color: #0056b3;
+.rec-header {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #ff4081;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+/* --- Fade-in animation --- */
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

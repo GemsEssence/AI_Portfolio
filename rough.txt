@@ -4,27 +4,27 @@ ai_projects/                                ← Parent folder for all your AI pr
 │   ├── main.py
 │   
 │
-├── ai_safe_chat_guard/                      ← Flask/FastAPI project
+├── ai-safe-chat-guard/                      ← Flask/FastAPI project
 │   ├── main.py
 │  
 │
-├── fashion_search_agent/                     ← Flask/FastAPI project
+├── fashion_search_bot/                     ← Flask/FastAPI project
 │   ├── main.py
 │   └
 │
-├── legalMind/                               ← Flask/FastAPI project
+├── LegalMind/                               ← Flask/FastAPI project
 │   ├── main.py
 │   
 │
-├── Object_detection/                        ← FastAPI project
+├── object_detect-info/                        ← FastAPI project
 │   ├── main.py
 │  
 │
-├── Personalized_Shopping_recommendation/   ← FastAPI project
+├── Personalized_Shopping_Recommendation/   ← FastAPI project
 │   ├── main.py
 │   
 │
-├── review_analyzer/                         ← Flask project
+├── review-analzer/                         ← Flask project
 │   ├── main.py
 │   └
 │

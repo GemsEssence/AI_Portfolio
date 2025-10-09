@@ -1,9 +1,13 @@
 function showExistingCustomer() {
+    document.getElementById('recommendations').innerHTML = '';
+
     document.getElementById('existing-form').style.display = 'block';
     document.getElementById('new-form').style.display = 'none';
 }
 
 function showNewCustomer() {
+    document.getElementById('recommendations').innerHTML = '';
+
     document.getElementById('new-form').style.display = 'block';
     document.getElementById('existing-form').style.display = 'none';
 }
@@ -25,6 +29,7 @@ function fetchRecommendations() {
             document.getElementById('recommendations').innerHTML = "<p>Error: " + err.message + "</p>";
         });
 }
+
 function fetchNewRecommendations() {
     const age = parseInt(document.getElementById('age').value);
     const gender = document.getElementById('gender').value;
@@ -55,16 +60,18 @@ function fetchNewRecommendations() {
 
 function displayRecommendations(recs) {
     const container = document.getElementById('recommendations');
-    container.innerHTML = "<h3>Recommended Products:</h3>";
-    recs.forEach(rec => {
+    container.innerHTML = "<h3>💡 AI-Powered Recommendations:</h3>";
+    
+    recs.forEach((rec, index) => {
         container.innerHTML += `
-            <div>
+            <div class="recommendation ai-card" style="animation-delay: ${index * 0.1}s">
+                <div class="rec-header">Recommended for You</div>
                 <p><strong>${rec.name}</strong></p>
                 <p>Category: ${rec.category}</p>
                 <p>Price: ${rec.price}</p>
                 <p>Brand: ${rec.brand}</p>
             </div>
-            <hr/>
         `;
     });
 }
+

@@ -19,20 +19,28 @@ fi
 # Format: ["folder"]="port custom_command"
 declare -A APPS
 APPS["ai_interview_app"]="8001 uvicorn app:app --reload"
-APPS["ai-safe-chat-guard"]="8502 streamlit run app/webapp.py"   # adjust path if needed
+APPS["ai-safe-chat-guard"]="8502 streamlit run app/webapp.py --server.headless true"
 APPS["fashion_search_bot"]="8003 uvicorn backend.main:app --reload"
 APPS["LegalMind"]="8004 uvicorn app:app --reload"
 APPS["object_detect-info"]="8005 uvicorn app.orchestrator:app --reload"
 APPS["Personalized_Shopping_Recommendation"]="8006 uvicorn backend.main:app --reload"
-APPS["review-analzer"]="8007 python app.py"
+APPS["review-analzer"]="5000 python app.py"
 
 echo "🔹 Starting all AI apps..."
 
 for APP in "${!APPS[@]}"; do
     IFS=' ' read -r PORT CMD <<< "${APPS[$APP]}"
-    echo "➡️  Starting $APP on port $PORT..."
+    echo "➡️  Preparing $APP on port $PORT..."
     
     cd "$BASE_DIR/$APP" || continue
+
+    # Kill existing process using the port
+    PID=$(lsof -t -i :"$PORT")
+    if [ -n "$PID" ]; then
+        echo "⚠️ Port $PORT is in use by PID $PID. Killing..."
+        kill -9 $PID
+        sleep 1
+    fi
 
     # Run the command in the background
     if [[ $CMD == streamlit* ]]; then
@@ -46,11 +54,20 @@ done
 
 # Start the dashboard last
 cd "$BASE_DIR/ai_project_hub" || exit
+DASH_PORT=9000
+# Kill dashboard port if occupied
+PID=$(lsof -t -i :"$DASH_PORT")
+if [ -n "$PID" ]; then
+    echo "⚠️ Dashboard port $DASH_PORT is in use by PID $PID. Killing..."
+    kill -9 $PID
+    sleep 1
+fi
+
 echo "🚀 Launching Dashboard..."
-uvicorn main:app --reload --port 9000 &
+uvicorn main:app --reload --port "$DASH_PORT" &
 
 # Open dashboard in browser after short delay
 sleep 5
-xdg-open "http://127.0.0.1:9000"
+xdg-open "http://127.0.0.1:$DASH_PORT"
 
-echo "✅ All apps started! Dashboard opened at http://127.0.0.1:9000"
+echo "✅ All apps started! Dashboard opened at http://127.0.0.1:$DASH_PORT"

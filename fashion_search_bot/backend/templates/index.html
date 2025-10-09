@@ -8,13 +8,23 @@
 <body>
   <div class="chat-container">
     <h2>👗 Fashion Search Bot</h2>
+    
     <div id="chat-box" class="chat-box"></div>
+
+    <!-- Loading inside chat -->
+    <div id="loading" class="loading" style="display:none;">
+      <div class="spinner"></div>
+      <span>Searching products...</span>
+    </div>
 
     <div class="input-area">
       <input type="file" id="imageInput" accept="image/*">
       <button onclick="uploadImage()">Upload</button>
+      <button id="refreshBtn" onclick="refreshChat()">⟳ Refresh</button>
+
     </div>
   </div>
+
   <script src="/static/script.js"></script>
 </body>
 </html>

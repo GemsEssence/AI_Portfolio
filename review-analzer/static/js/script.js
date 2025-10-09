@@ -1,31 +1,35 @@
 async function analyzeReview() {
-    let reviewText = document.getElementById("reviewInput").value;
-    let resultDiv = document.getElementById("result");
+    const reviewText = document.getElementById("reviewInput").value;
+    const resultDiv = document.getElementById("result");
 
     if (!reviewText.trim()) {
-        resultDiv.innerHTML = "<p style='color: red;'>Please enter a review!</p>";
+        resultDiv.innerHTML = `<div class="ai-card"><p style='color: red;'>Please enter a review!</p></div>`;
         return;
     }
 
-    resultDiv.innerHTML = "<p>Analyzing...</p>";
+    resultDiv.innerHTML = `<div class="ai-card"><p>Analyzing with AI...</p></div>`;
 
-    let response = await fetch("/analyze", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ review: reviewText })
-    });
+    try {
+        const response = await fetch("/analyze", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ review: reviewText })
+        });
 
-    let data = await response.json();
+        const data = await response.json();
 
-    if (data.error) {
-        resultDiv.innerHTML = `<p style='color: red;'>Error: ${data.error}</p>`;
-    } else {
-        resultDiv.innerHTML = `
-            <h3>Analysis Result:</h3>
-            <p><strong>Summary:</strong> ${data.summary}</p>
-            <p><strong>Sentiment:</strong> ${data.sentiment}</p>
-        `;
+        if (data.error) {
+            resultDiv.innerHTML = `<div class="ai-card"><p style='color: red;'>Error: ${data.error}</p></div>`;
+        } else {
+            resultDiv.innerHTML = `
+                <div class="ai-card">
+                    <h3>AI Analysis Result:</h3>
+                    <p><span class="label">Summary:</span> ${data.summary}</p>
+                    <p><span class="label">Sentiment:</span> ${data.sentiment}</p>
+                </div>
+            `;
+        }
+    } catch (err) {
+        resultDiv.innerHTML = `<div class="ai-card"><p style='color: red;'>Error: ${err.message}</p></div>`;
     }
 }

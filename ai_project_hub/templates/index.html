@@ -3,57 +3,193 @@
 <head>
   <meta charset="UTF-8">
   <title>AI Project Hub</title>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <style>
+    /* === Global Styles === */
     body {
-      font-family: Arial, sans-serif;
-      background: #f7f9fc;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(-45deg, #6a11cb, #2575fc, #00c6ff, #0072ff);
+      background-size: 400% 400%;
+      animation: gradientBG 10s ease infinite;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* === Heading Styles === */
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      color: white;
+      animation: fadeIn 2s ease;
+    }
+
+    header h1 {
+      font-size: 2.8rem;
+      margin: 0;
+      letter-spacing: 1px;
+      text-shadow: 0 0 10px rgba(255,255,255,0.4),
+                   0 0 20px rgba(0,198,255,0.3),
+                   0 0 30px rgba(0,114,255,0.4);
+      animation: glow 3s ease-in-out infinite alternate;
+    }
+
+    header p {
+      font-size: 1.1rem;
+      color: #f1f1f1;
+      margin-top: 10px;
+      max-width: 600px;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #fff, 0 0 20px #007bff, 0 0 30px #00c6ff; }
+      to { text-shadow: 0 0 20px #fff, 0 0 40px #00c6ff, 0 0 60px #007bff; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* === Card Container === */
+    .card-container {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      padding: 40px;
+      gap: 25px;
+      width: 100%;
+      max-width: 1200px;
     }
+
+    /* === Card Styles === */
     .card {
       width: 280px;
-      background: white;
-      border-radius: 15px;
-      padding: 20px;
-      margin: 15px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 25px;
       text-align: center;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      transition: transform 0.2s;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
     }
+
     .card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-8px) scale(1.03);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.25);
     }
+
+    /* === Icon === */
+    .icon {
+      font-size: 40px;
+      color: #007bff;
+      margin-bottom: 15px;
+      transition: color 0.3s;
+    }
+
+    .card:hover .icon {
+      color: #00c6ff;
+    }
+
     h3 {
       margin-bottom: 10px;
-      color: #333;
+      color: #1a1a1a;
+      font-size: 20px;
     }
+
     p {
-      color: #555;
+      color: #444;
       font-size: 14px;
-      height: 40px;
+      min-height: 40px;
     }
+
+    /* === Button Styles === */
     button {
-      background-color: #007bff;
+      background: linear-gradient(90deg, #007bff, #00c6ff);
       color: white;
       border: none;
-      padding: 10px 15px;
-      border-radius: 8px;
+      padding: 10px 20px;
+      border-radius: 10px;
       cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 8px rgba(0, 123, 255, 0.3);
     }
+
     button:hover {
-      background-color: #0056b3;
+      background: linear-gradient(90deg, #0056b3, #007bff);
+      box-shadow: 0 5px 12px rgba(0, 123, 255, 0.5);
+      transform: translateY(-2px);
+    }
+
+    /* === Responsive === */
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 2rem;
+      }
+      .card {
+        width: 90%;
+      }
     }
   </style>
 </head>
 <body>
-  {% for app in apps %}
-  <div class="card">
-    <h3>{{ app.name }}</h3>
-    <p>{{ app.desc }}</p>
-    <button onclick="window.open('{{ app.url }}', '_blank')">Open App</button>
+  <header style="text-align:center; margin-bottom:50px;">
+    <h1 style="font-size:3rem; display:flex; justify-content:center; align-items:center; gap:15px;">
+      <!-- Use image instead of icon -->
+      <img src="/static/ai_img.png" alt="AI Brain" style="
+    height:3rem; 
+    width:auto; 
+    filter: invert(1) brightness(2);
+">
+      <span style="color:white; text-shadow: 0 0 5px rgba(0,0,0,0.3);">AI Project Hub</span>
+    </h1>
+    <p style="font-size:1.2rem; color:#f1f1f1; max-width:700px; margin:10px auto 0 auto; line-height:1.5;">
+      Explore and launch your AI-powered applications — each built with intelligence and creativity.
+    </p>
+  </header>
+  
+  
+
+  <div class="card-container">
+    {% for app in apps %}
+    <div class="card">
+      {% if "object" in app.name.lower() %}
+        <i class="fas fa-camera icon"></i>
+      {% elif "recommend" in app.name.lower() %}
+        <i class="fas fa-shopping-cart icon"></i>
+      {% elif "chat guard" in app.name.lower() %}
+        <i class="fas fa-user-shield icon"></i>
+      {% elif "legal" in app.name.lower() %}
+        <i class="fas fa-file-lines icon"></i>
+      {% elif "interview" in app.name.lower() %}
+        <i class="fas fa-user-tie icon"></i>
+      {% elif "review" in app.name.lower() %}
+        <i class="fas fa-star-half-stroke icon"></i>
+      {% elif "fashion" in app.name.lower() %}
+        <i class="fas fa-shirt icon"></i>
+      {% else %}
+        <i class="fas fa-cube icon"></i>
+      {% endif %}
+  
+      <h3>{{ app.name }}</h3>
+      <p>{{ app.desc }}</p>
+      <button onclick="window.open('{{ app.url }}', '_blank')">
+        <i class="fas fa-external-link-alt"></i> Open App
+      </button>
+    </div>
+    {% endfor %}
   </div>
-  {% endfor %}
+  
 </body>
 </html>

@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Review Analyzer</title>
+    <title>🧠 AI Product Review Analyzer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
+    <div class="container">
+        <h1>🧠 AI Product Review Analyzer</h1>
+        <p>Paste your product review below and let the AI analyze it instantly!</p>
 
-    <h2>Product Review Analyzer</h2>
-    
-    <textarea id="reviewInput" placeholder="Enter your product review here..."></textarea><br>
-    <button onclick="analyzeReview()">Analyze Review</button>
+        <textarea id="reviewInput" placeholder="Enter your product review here..."></textarea>
+        <button onclick="analyzeReview()">Analyze Review</button>
 
-    <div id="result"></div>
+        <div id="result"></div>
+    </div>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-
 </body>
 </html>
