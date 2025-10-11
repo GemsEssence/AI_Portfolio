@@ -75,7 +75,7 @@ def _chunk_text(text, size=CHUNK_SIZE, overlap=CHUNK_OVERLAP):
 
     if current_chunk:
         chunks.append(" ".join(current_chunk))
-    print(chunks,"chunks=================================================================>")
+    # print(chunks,"chunks=================================================================>")
     return chunks
 
 
@@ -125,10 +125,10 @@ def build_index_from_folder(folder="rawdata/"):
     index = idx
     chunks = all_chunks
     metas = all_meta
-    print(index,"index======================================================>")
-    print(chunks,"chunks======================================================>")
+    # print(index,"index======================================================>")
+    # print(chunks,"chunks======================================================>")
 
-    print(metas,"metas======================================================>")
+    # print(metas,"metas======================================================>")
 
     return index, metas, chunks
 
