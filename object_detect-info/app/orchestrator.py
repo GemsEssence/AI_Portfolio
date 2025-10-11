@@ -37,6 +37,7 @@ async def camera_feed(frame: UploadFile = File(...)):
     logger.info(f"Detected classes from camera: {detected_classes}")
 
     details = get_object_details(detected_classes)
+    print(details,"details----------------------------------------------------------------->")
     question = details[0]["question"] if detected_classes else "No objects detected."
     
     return DetectionResponse(objects=details, question=question)

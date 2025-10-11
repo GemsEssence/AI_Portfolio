@@ -211,9 +211,8 @@ async def submit_answer(answer: str = Form(...)):
     ])
     session["messages"].append({"role": "assistant", "content": follow_up})
     session["transcript"].append({"role": "interviewer", "text": follow_up})
-
+    
     return JSONResponse({"finished": False, "question": follow_up})
-
 
 @app.post("/finish")
 async def finish_interview():
@@ -232,18 +231,18 @@ async def finish_interview():
     # Get evaluation from OpenAI
     final_feedback = ask_chatgpt(session["messages"] + [
         {"role": "user", "content": f"""
-You are a professional technical interviewer. Evaluate this candidate for a {session['tech']} developer with {session['exp']} years experience.
-For each question, provide:
-- question
-- candidate's answer (or note if missing)
-- score (0-10)
-- short feedback
-- summary per question
-At the end, provide an overall score and overall feedback.
-Respond in **plain text** in a readable, user-friendly format, not JSON.
-Transcript:
-{transcript_text}
-        """}
+            You are a professional technical interviewer. Evaluate this candidate for a {session['tech']} developer with {session['exp']} years experience.
+            For each question, provide:
+            - question
+            - candidate's answer (or note if missing)
+            - score (0-10)
+            - short feedback
+            - summary per question
+            At the end, provide an overall score and overall feedback.
+            Respond in **plain text** in a readable, user-friendly format, not JSON.
+            Transcript:
+            {transcript_text}
+                    """}
     ])
 
     return JSONResponse({

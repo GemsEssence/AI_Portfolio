@@ -15,11 +15,18 @@ let interviewFinished = false;
 // Utility: Speak text
 // --------------------
 function speakText(text) {
-    const utter = new SpeechSynthesisUtterance(text);
+    // Remove code-like symbols and unwanted brackets
+    let cleanText = text
+        .replace(/[`{}<>]/g, "")      // remove backticks and braces
+        .replace(/\(.*?\)/g, "")      // remove content inside parentheses
+        .replace(/\s{2,}/g, " ")      // collapse multiple spaces
+        .replace(/\n/g, ". ")         // replace newlines with pause
+        .trim();
+
+    const utter = new SpeechSynthesisUtterance(cleanText);
     utter.lang = "en-US";
     speechSynthesis.speak(utter);
 }
-
 // --------------------
 // Add chat bubble
 // --------------------
@@ -33,55 +40,61 @@ function addBubble(role, text){
 // --------------------
 // Lock UI and show final evaluation
 // --------------------
-function lockInterviewUI(finalFeedback){
-    interviewFinished = true;       // stop further answers
+function lockInterviewUI(finalFeedback) {
+    interviewFinished = true;
     answerInput.disabled = true;
     sendBtn.disabled = true;
-    chatPanel.style.display = "none";   // hide chat panel
-    document.querySelector(".setup-panel").style.display = "none"; // hide setup panel
-
+    chatPanel.style.display = "none";
+    document.querySelector(".setup-panel").style.display = "none";
     summaryPanel.style.display = "block";
 
     const summaryCards = document.getElementById("summaryCards");
-    summaryCards.innerHTML = ""; // clear old cards
+    summaryCards.innerHTML = ""; // clear previous summary cards
 
-    // Split by questions using "---" as separator
+    // Split into question blocks using "---" separator
     const questions = finalFeedback.split(/---+/);
 
     let totalScore = 0;
     let scoreCount = 0;
+    let questionNumber = 0;
 
-    questions.forEach((q, idx) => {
-        if(q.trim() === "") return;
+    questions.forEach((q) => {
+        if (q.trim() === "") return;
 
-        // Extract Question, Answer, Score, Feedback using regex
-        const questionMatch = q.match(/Question\s*\d+:\s*(.*)/i);
-        const answerMatch = q.match(/Candidate's Answer:\s*(.*)/i);
-        const scoreMatch = q.match(/Score:\s*(\d+)/i);
-        const feedbackMatch = q.match(/Feedback:\s*([\s\S]*)/i);
+        // Extract Question, Answer, Score, and Feedback
+        const questionMatch = q.match(/\*\*Question\s*\d+:\*\*\s*(.*)/i);
+        const answerMatch = q.match(/\*\*Candidate's Answer:\*\*\s*(.*)/i);
+        const scoreMatch = q.match(/\*\*Score:\*\*\s*(\d+)/i);
+        const feedbackMatch = q.match(/\*\*Feedback:\*\*\s*([\s\S]*)/i);
 
-        const questionText = questionMatch ? questionMatch[1].trim() : "(Question missing)";
-        const answerText = answerMatch ? answerMatch[1].trim() : "(No answer provided)";
+        const questionText = questionMatch ? questionMatch[1].trim() : "";
+        const answerText = answerMatch ? answerMatch[1].trim() : "";
         const scoreValue = scoreMatch ? parseInt(scoreMatch[1]) : 0;
-        const feedbackText = feedbackMatch ? feedbackMatch[1].trim() : "(No feedback)";
+        const feedbackText = feedbackMatch ? feedbackMatch[1].trim() : "";
 
+        // Skip question if no valid text found (missing or blank)
+        if (!questionText) return;
+
+        questionNumber++;
         totalScore += scoreValue;
         scoreCount++;
 
+        // Create summary card for each valid question
         const card = document.createElement("div");
         card.className = "summary-card";
         card.innerHTML = `
-            <h4>Question ${idx + 1}: ${questionText}</h4>
-            <p><b>Candidate's Answer:</b> ${answerText}</p>
+            <h4>Question ${questionNumber}: ${questionText}</h4>
+            <p><b>Candidate's Answer:</b> ${answerText || "(No answer provided)"}</p>
             <p><b>Score:</b> ${scoreValue}/10</p>
-            <p><b>Feedback:</b> ${feedbackText}</p>
+            <p><b>Feedback:</b> ${feedbackText || "(No feedback)"}</p>
         `;
         summaryCards.appendChild(card);
     });
 
-    const overallScore = (scoreCount ? (totalScore / scoreCount) : 0).toFixed(2);
-    document.getElementById("overallScore").textContent = `Overall Score: ${overallScore}/10`;
-    document.getElementById("overallFeedback").textContent = "Detailed feedback provided above.";
+    // Handle overall score and feedback
+    const overallScore = scoreCount ? (totalScore / scoreCount).toFixed(2) : "0.00";
+    overallScoreEl.textContent = `Overall Score: ${overallScore}/10`;
+    overallFeedbackEl.textContent = "Detailed feedback provided above.";
 
     speakText("Interview finished. Here is your final evaluation.");
 }

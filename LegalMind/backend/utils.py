@@ -5,6 +5,7 @@ import faiss
 import torch
 from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
+import re
 
 # ============================
 # Config
@@ -33,10 +34,50 @@ llm = AutoModelForSeq2SeqLM.from_pretrained(GEN_MODEL).to(device)
 # ============================
 # Helpers
 # ============================
+# def _chunk_text(text, size=CHUNK_SIZE, overlap=CHUNK_OVERLAP):
+#     words = text.split()
+#     step = size - overlap
+#     return [" ".join(words[i:i+size]) for i in range(0, len(words), step)]
+
+
 def _chunk_text(text, size=CHUNK_SIZE, overlap=CHUNK_OVERLAP):
-    words = text.split()
-    step = size - overlap
-    return [" ".join(words[i:i+size]) for i in range(0, len(words), step)]
+    """
+    Paragraph-aware chunking with sliding window.
+    Keeps paragraphs together and splits only if necessary.
+    """
+    import re
+
+    paragraphs = [p.strip() for p in re.split(r'\n{1,2}', text) if p.strip()]
+    chunks = []
+    current_chunk = []
+    current_len = 0
+
+    for para in paragraphs:
+        para_words = para.split()
+        para_len = len(para_words)
+
+        # Split long paragraphs internally
+        if para_len > size:
+            for i in range(0, para_len, size - overlap):
+                subchunk = para_words[i:i+size]
+                chunks.append(" ".join(subchunk))
+        else:
+            if current_len + para_len <= size:
+                current_chunk.extend(para_words)
+                current_len += para_len
+            else:
+                if current_chunk:
+                    chunks.append(" ".join(current_chunk))
+                # Start new chunk with sliding overlap
+                overlap_words = current_chunk[-overlap:] if overlap <= len(current_chunk) else current_chunk
+                current_chunk = overlap_words + para_words
+                current_len = len(current_chunk)
+
+    if current_chunk:
+        chunks.append(" ".join(current_chunk))
+    print(chunks,"chunks=================================================================>")
+    return chunks
+
 
 def _extract_text_from_pdf(path):
     doc = fitz.open(path)
@@ -84,6 +125,11 @@ def build_index_from_folder(folder="rawdata/"):
     index = idx
     chunks = all_chunks
     metas = all_meta
+    print(index,"index======================================================>")
+    print(chunks,"chunks======================================================>")
+
+    print(metas,"metas======================================================>")
+
     return index, metas, chunks
 
 def add_pdf_to_index(file_bytes, filename="uploaded.pdf"):
@@ -245,14 +291,14 @@ def answer_query(query, top_k=5):
     # Concatenate chunks for LLM but keep text hidden from frontend
     context_text = "\n\n".join([r["text"] for r in retrieved])
     prompt = f"""You are a precise legal assistant.
-Answer the question using ONLY the provided context.
-If the answer is not present, reply exactly: INSUFFICIENT CONTEXT.
+                Answer the question using ONLY the provided context.
+                If the answer is not present, reply exactly: INSUFFICIENT CONTEXT.
 
-Context:
-{context_text}
+                Context:
+                {context_text}
 
-Question: {query}
-Answer:"""
+                Question: {query}
+                Answer:"""
 
     ans = _generate_answer(prompt)
 
