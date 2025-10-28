@@ -49,18 +49,22 @@ def generate_caption_and_features(image_bytes: bytes):
 
         # Crop dress only
         dress_image = crop_dress(image)
+        
+        # print(dress_image,"dressImage------------------------------->")
 
         # BLIP caption on cropped dress
         inputs = caption_processor(images=dress_image, return_tensors="pt").to(device)
         out = caption_model.generate(**inputs, max_length=50)
         base_caption = caption_processor.decode(out[0], skip_special_tokens=True)
-        print(f"[DEBUG] BLIP base caption (cropped): {base_caption}")
+        # print(f"[DEBUG] BLIP base caption (cropped): {base_caption}")
 
         # Refine with instruction-following LLM
         prompt = (
-            "You are a fashion expert. Describe ONLY the garment, "
-            "including type, silhouette, fabric, embroidery/pattern, and occasion. "
-            "Ignore colors, people, and background.\n"
+            "You are a professional fashion product describer for an online store. "
+            "Describe ONLY the clothing item — not the person, gender, or background. "
+            "Focus purely on garment type, fabric, pattern, design, embroidery, style, and occasion. "
+            "Avoid words like 'person', 'man', 'woman', 'girl', 'boy', 'model', 'wearing', 'standing', etc. "
+            "Describe it as if it is displayed alone on a plain background.\n\n"
             f"Caption: \"{base_caption}\""
         )
         refined_caption = llm_pipeline(prompt, max_new_tokens=80, do_sample=False)[0]["generated_text"].strip()
@@ -73,7 +77,7 @@ def generate_caption_and_features(image_bytes: bytes):
             vision_outputs = caption_model.vision_model(pixel_values=inputs["pixel_values"])
             pooled_output = vision_outputs.last_hidden_state.mean(dim=1)
             image_features = torch.nn.functional.normalize(pooled_output, p=2, dim=1)
-        print(f"[DEBUG] Image features shape: {image_features.shape}")
+        # print(f"[DEBUG] Image features shape: {image_features.shape}")
 
         return refined_caption, image_features
 

@@ -115,5 +115,41 @@
         "origin": "Dogs were domesticated from wolves around 15,000 to 40,000 years ago, making them one of the first domesticated animals. Their breeding has resulted in a vast array of breeds with specific traits and purposes.",
         "summary": "Dogs are versatile and loyal companions that play significant roles in human society, from pets to working animals.",
         "question": "Would you like to know more about this dog?"
+    },
+    "airplane": {
+        "name": "Airplane",
+        "description": "An airplane is a powered flying vehicle with fixed wings and a weight greater than that of the air it displaces. It is designed for air travel, enabling the transportation of passengers and cargo over long distances. Airplanes come in various sizes and types, including commercial, military, and private models. They are equipped with engines that provide thrust and control surfaces that allow for maneuverability.",
+        "usage": "Airplanes are commonly used for commercial air travel, cargo transport, military operations, and recreational flying. They play a crucial role in global connectivity, facilitating international trade and tourism.",
+        "benefits": "Airplanes significantly reduce travel time compared to ground transportation, making long-distance journeys feasible within hours. They also enable access to remote areas, boost economies through tourism, and are vital for emergency services and disaster relief.",
+        "origin": "The invention of the airplane is credited to the Wright brothers, who successfully flew the first powered aircraft in 1903. Since then, aviation technology has advanced rapidly, leading to the development of various aircraft types and global airline networks.",
+        "summary": "Airplanes are essential vehicles for modern transportation, transforming how people and goods move across the globe.",
+        "question": "Would you like to know more about this airplane?"
+    },
+    "vase": {
+        "name": "Vase",
+        "description": "A vase is a decorative container typically used to hold cut flowers or as a standalone ornament. They come in various shapes, sizes, and materials, including glass, ceramic, and metal. Vases can also serve functional purposes, such as storing items or enhancing home decor. Often intricately designed, they reflect artistic styles and cultural significance.",
+        "usage": "Commonly used in homes, offices, and public spaces for floral arrangements or as decorative pieces.",
+        "benefits": "Vases enhance aesthetic appeal, add character to spaces, and can symbolize beauty and harmony in interior design.",
+        "origin": "The use of vases dates back to ancient civilizations, with early examples found in Egyptian, Greek, and Chinese cultures, often serving both functional and ceremonial purposes.",
+        "summary": "Vases are versatile decorative containers that enhance the beauty of floral displays and interior spaces.",
+        "question": "Would you like to know more about this vase?"
+    },
+    "banana": {
+        "name": "Banana",
+        "description": "Bananas are elongated, edible fruits produced by several kinds of large herbaceous flowering plants. They are typically yellow when ripe and are known for their sweet flavor and soft texture. Rich in essential nutrients, bananas are often consumed fresh or used in various dishes and desserts.",
+        "usage": "Bananas are commonly eaten as a snack, added to smoothies, or used in baking, such as banana bread. They are also popular in breakfast cereals and fruit salads.",
+        "benefits": "Bananas are a great source of potassium, fiber, and vitamins, making them beneficial for heart health, digestion, and energy levels. Their convenience and natural packaging also make them an ideal on-the-go snack.",
+        "origin": "Bananas are believed to have originated in Southeast Asia and have been cultivated for thousands of years. They spread to other tropical regions and are now grown in many countries around the world.",
+        "summary": "Bananas are nutritious, versatile fruits enjoyed globally, known for their sweet taste and health benefits.",
+        "question": "Would you like to know more about this banana?"
+    },
+    "zebra": {
+        "name": "Zebra",
+        "description": "Zebras are distinctive African equines known for their black and white striped coats. They belong to the horse family and are social animals that live in herds. Their stripes help with camouflage and social interactions. Zebras are primarily grazers, feeding on grasses and other vegetation.",
+        "usage": "Zebras are often studied in wildlife conservation, ecotourism, and educational contexts. They are also featured in art, culture, and media.",
+        "benefits": "Understanding zebras contributes to biodiversity conservation efforts and helps maintain healthy ecosystems. Their unique adaptations provide insights into evolutionary biology.",
+        "origin": "Zebras are native to Africa, with three main species: the plains zebra, the Grevy's zebra, and the mountain zebra. They have been part of African culture and wildlife for centuries.",
+        "summary": "Zebras are iconic striped animals native to Africa, known for their social behavior and ecological significance.",
+        "question": "Would you like to know more about this zebra?"
     }
 }

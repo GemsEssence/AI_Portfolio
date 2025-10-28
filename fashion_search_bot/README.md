@@ -75,17 +75,17 @@ uvicorn backend.main:app --reload
 
 ### Project Structure
 ```bash
-fashion_search_bot/
-│── backend/
-│   ├── main.py
-│   ├── services/
-│   │   ├── caption.py
-│   │   ├── vector_search.py
-│   │   └── search.py
-│   ├── static/
-│   │   └── style.css
-│   └── templates/
-│       └── index.html  
-│── .env
-│── requirements.txt
+    fashion_search_bot/
+    │── backend/
+    │   ├── main.py
+    │   ├── services/
+    │   │   ├── caption.py
+    │   │   ├── vector_search.py
+    │   │   └── search.py
+    │   ├── static/
+    │   │   └── style.css
+    │   └── templates/
+    │       └── index.html  
+    │── .env
+    │── requirements.txt
 ```

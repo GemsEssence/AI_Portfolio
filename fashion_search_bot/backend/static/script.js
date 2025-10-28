@@ -16,7 +16,7 @@ async function uploadImage() {
 
     const imgPreview = document.createElement("img");
     imgPreview.src = URL.createObjectURL(file);
-    imgPreview.style.maxWidth = "150px";
+    imgPreview.style.maxWidth = "170px";
     imgPreview.style.borderRadius = "10px";
     imgPreview.style.display = "block";
 
@@ -44,8 +44,11 @@ async function uploadImage() {
         // 3️⃣ Hide loading
         loadingDiv.style.display = "none";
 
+
         // 4️⃣ Show products
         if (data.products && data.products.length > 0) {
+            const rowDiv = document.createElement("div");
+            rowDiv.className = "product-card-row";
             data.products.forEach(p => {
                 const prodMsg = document.createElement("div");
                 prodMsg.className = "message bot product-card";
@@ -59,8 +62,9 @@ async function uploadImage() {
                     </div>
                 `;
 
-                chatBox.appendChild(prodMsg);
+                rowDiv.appendChild(prodMsg);
             });
+            chatBox.appendChild(rowDiv);
         } else {
             const noResultMsg = document.createElement("div");
             noResultMsg.className = "message bot";

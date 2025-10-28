@@ -123,8 +123,7 @@ def get_object_details(detected_classes):
                 "usage": "",
                 "benefits": "",
                 "origin": "",
-                "summary": "",
-                "question": f"Would you like to know more about this {cls}?",
+                "summary": ""
             }
             details.append(fallback_data)
 

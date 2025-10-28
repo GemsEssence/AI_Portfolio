@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 
 from .services.caption import generate_caption_and_features
 from .services.search import search_products
+from .services.vector_search import filter_similar_products
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -33,18 +34,25 @@ async def upload_dress(file: UploadFile = File(...)):
     try:
         # Read uploaded image bytes
         image_bytes = await file.read()
-        print(f"Received file: {file.filename}, size: {len(image_bytes)} bytes")
+        # print(f"Received file: {file.filename}, size: {len(image_bytes)} bytes")
 
         # Generate caption (optional: you can display it)
-        description, _ = generate_caption_and_features(image_bytes)
-        print(f"Generated caption: {description}")
+        description, image_features = generate_caption_and_features(image_bytes)
+        # print(f"Generated caption: {description}")
 
         # Search products based on caption
         scraped_products = search_products(description, limit=10)
-        print(f"Scraped {len(scraped_products)} products from search.")
+        # print(f"Scraped: {scraped_products} products from search.")
+        if image_features is not None:
+            filtered_product = filter_similar_products(image_features, scraped_products)
+            print(f'found {len(filtered_product)} similar products------>')
+        else:
+            filtered_product = scraped_products
+        
+        
 
         # Return products directly (no vector search)
-        return JSONResponse({"description": description, "products": scraped_products})
+        return JSONResponse({"description": description, "products": filtered_product})
 
     except Exception as e:
         print(f"Error in upload_dress: {e}")

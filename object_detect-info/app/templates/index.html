@@ -1,216 +1,310 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Visionary Object Detection</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f6fa;
-            color: #2f3640;
-            margin: 0;
-            padding: 0;
-        }
+<meta charset="UTF-8">
+<title>Visionary AI Object Detection</title>
+<style>
+* { box-sizing:border-box; margin:0; padding:0; font-family:'Segoe UI', sans-serif; }
+body, html { width:100%; height:100%; overflow:hidden; position:relative; }
 
-        h1 {
-            text-align: center;
-            background-color: #273c75;
-            color: white;
-            padding: 20px 0;
-            margin: 0;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 900px;
-            margin: 20px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        form {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        input[type="file"] {
-            flex: 1;
-        }
-
-        button {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
-            background-color: #44bd32;
-            color: white;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        button:hover {
-            background-color: #4cd137;
-        }
-
-        #camera {
-            display: block;
-            margin: 0 auto 10px auto;
-            border-radius: 10px;
-            border: 2px solid #dcdde1;
-        }
-
-        #results {
-            margin-top: 20px;
-        }
-
-        .object-card {
-            background: #f1f2f6;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .object-card h3 {
-            margin: 0 0 10px 0;
-            color: #40739e;
-        }
-
-        .object-card p {
-            margin: 4px 0;
-        }
-
-        .question {
-            font-style: italic;
-            color: #e84118;
-            margin-top: 20px;
-        }
-
-        .camera-controls {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .camera-controls button {
-            margin: 0 10px;
-        }
-    </style>
-</head>
-<body>
-    <h1>Visionary Object Detection</h1>
-
-    <div class="container">
-        <!-- Upload Form -->
-        <form id="uploadForm">
-            <input type="file" id="fileInput" name="file" accept="image/*">
-            <button type="submit">Upload Image</button>
-        </form>
-
-        <!-- Real-Time Camera Detection -->
-        <h2 style="text-align:center;">Real-Time Camera Detection</h2>
-        <video id="camera" width="640" height="480" autoplay></video>
-        <div class="camera-controls">
-            <button id="startCamera">Start Camera</button>
-            <button id="stopCamera">Stop Camera</button>
-        </div>
-
-        <!-- Detection Results -->
-        <div id="results"></div>
-    </div>
-
-    <script>
-        async function handleForm(formId, inputId, endpoint) {
-            const form = document.getElementById(formId);
-            form.addEventListener("submit", async (e) => {
-                e.preventDefault();
-                const fileInput = document.getElementById(inputId);
-                const formData = new FormData();
-                formData.append(fileInput.name, fileInput.files[0]);
-
-                const response = await fetch(endpoint, {
-                    method: "POST",
-                    body: formData
-                });
-
-                const data = await response.json();
-                displayResults(data);
-            });
-        }
-
-        handleForm("uploadForm", "fileInput", "/upload-image");
-
-        // Real-time camera detection
-        let video = document.getElementById("camera");
-        let resultsDiv = document.getElementById("results");
-        let stream;
-        let interval;
-
-        document.getElementById("startCamera").onclick = async () => {
-            stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            video.srcObject = stream;
-
-            interval = setInterval(async () => {
-                let canvas = document.createElement("canvas");
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                canvas.getContext("2d").drawImage(video, 0, 0);
-                let dataUrl = canvas.toDataURL("image/jpeg");
-                let blob = await (await fetch(dataUrl)).blob();
-                let formData = new FormData();
-                formData.append("frame", blob, "frame.jpg");
-
-                const response = await fetch("/camera-feed", {
-                    method: "POST",
-                    body: formData
-                });
-                const data = await response.json();
-                displayResults(data);
-            }, 1000);
-        };
-
-        document.getElementById("stopCamera").onclick = () => {
-            clearInterval(interval);
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-            }
-        };
-
-        // Function to display detection results
-     // Function to display detection results
-function displayResults(data) {
-    resultsDiv.innerHTML = ""; // Clear old results
-    const seenObjects = new Set(); // Track displayed objects
-
-    if (data.objects.length === 0) {
-        resultsDiv.innerHTML = `<p class="question">No objects detected. ${data.question}</p>`;
-        return;
-    }
-
-    data.objects.forEach(obj => {
-        const objNameLower = obj.name.toLowerCase();
-        if (seenObjects.has(objNameLower)) return; // Skip duplicate
-        seenObjects.add(objNameLower);
-
-        const card = document.createElement("div");
-        card.className = "object-card";
-        card.innerHTML = `
-            <h3>${obj.name}</h3>
-            <p><strong>Description:</strong> ${obj.description}</p>
-            <p><strong>Usage:</strong> ${obj.usage}</p>
-            <p><strong>Benefits:</strong> ${obj.benefits}</p>
-            <p><strong>Origin:</strong> ${obj.origin}</p>
-            <p><strong>Summary:</strong> ${obj.summary}</p>
-        `;
-        resultsDiv.appendChild(card);
-    });
-
-    const questionEl = document.createElement("p");
-    questionEl.className = "question";
-    questionEl.textContent = data.question;
-    resultsDiv.appendChild(questionEl);
+/* === Dynamic Gradient Background === */
+body {
+    background: linear-gradient(270deg, #6a11cb, #2575fc, #ff6b6b, #ff9a9e);
+    background-size: 800% 800%;
+    animation: gradientBG 20s ease infinite;
 }
 
-    </script>
+@keyframes gradientBG {
+    0% { background-position:0% 50%; }
+    50% { background-position:100% 50%; }
+    100% { background-position:0% 50%; }
+}
+
+/* Particle Layer */
+#particles {
+    position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0;
+}
+
+/* Hero / Landing */
+body, html {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* vertical center */
+    background: linear-gradient(270deg, #6a11cb, #2575fc, #ff6b6b, #ff9a9e);
+    background-size: 800% 800%;
+    animation: gradientBG 20s ease infinite;
+    overflow: hidden;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.hero {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: white;
+    max-width: 900px;
+    width: 90%; /* responsive width */
+    padding: 50px 30px; /* padding inside hero */
+    border-radius: 25px;
+    background: rgba(0,0,0,0.5);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    transition: all 0.3s ease-in-out;
+}
+
+.hero h1 { font-size:3em; margin-bottom:20px; text-shadow:2px 2px 12px rgba(0,0,0,0.3);}
+.hero p { font-size:1.2em; margin-bottom:30px; }
+.hero button { padding:15px 30px; margin:10px; font-size:1em; border:none; border-radius:50px; cursor:pointer;
+    background-color:#ff6b6b; color:white; transition:0.3s; box-shadow:0 5px 15px rgba(0,0,0,0.2);}
+.hero button:hover { background-color:#ff8787; transform:scale(1.05); }
+
+/* Section containers */
+.section-container {
+    position:fixed; top:0; left:0; width:100%; height:100%; overflow-y:auto; display:none; flex-direction:column;
+    align-items:center; padding:30px; background: rgba(255,255,255,0.05); backdrop-filter: blur(5px); z-index:1;
+}
+.section-container.active { display:flex; }
+.section-container h2 { color:white; margin-bottom:20px; font-size:2em; text-shadow:1px 1px 8px rgba(0,0,0,0.5); }
+
+/* Back button */
+.back-btn { position:fixed; top:20px; left:20px; padding:10px 20px; border-radius:50px; border:none; cursor:pointer; 
+    background:#40739e; color:white; z-index:2; box-shadow:0 5px 15px rgba(0,0,0,0.3);}
+.back-btn:hover { background:#273c75; }
+
+/* Upload card */
+.upload-card {
+    width:100%; max-width:1000px; background:rgba(255,255,255,0.95); border-radius:25px; padding:30px;
+    box-shadow:0 15px 35px rgba(0,0,0,0.2); position:relative; transition:0.3s;
+}
+.upload-card.dragover { border:3px dashed #44bd32; }
+.upload-label { display:block; padding:40px 20px; border:2px dashed #273c75; border-radius:20px; cursor:pointer;
+    margin-bottom:20px; font-weight:bold; text-align:center; transition:0.3s; color:#273c75; background:rgba(255,255,255,0.2);}
+.upload-label:hover { background:rgba(39,55,117,0.1); }
+
+#preview { width:100%; max-height:350px; object-fit:contain; border-radius:20px; box-shadow:0 8px 20px rgba(0,0,0,0.15); margin-bottom:15px; display:none; }
+
+.upload-btn { padding:15px 40px; background:#44bd32; color:white; font-size:1em; border:none; border-radius:50px; cursor:pointer; transition:0.3s; box-shadow:0 5px 15px rgba(0,0,0,0.2); display:block; margin: 0 auto 20px;}
+.upload-btn:hover { background:#4cd137; transform:scale(1.05); }
+
+/* Loader */
+.loader { border:8px solid #f3f3f3; border-top:8px solid #273c75; border-radius:50%; width:60px; height:60px; animation:spin 1s linear infinite; margin:20px auto; display:none; }
+@keyframes spin { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }
+
+/* Description card */
+#descriptionCard {
+    background:rgba(255,255,255,0.95); border-radius:20px; box-shadow:0 10px 25px rgba(0,0,0,0.15); width:100%; max-width:1000px;
+    padding:20px; margin-top:20px; max-height:300px; overflow-y:auto; animation:fadeIn 0.5s ease forwards;
+}
+.description-item { padding:10px; margin-bottom:10px; border-bottom:1px solid #dcdde1; font-size:0.95em; color:#2f3640; }
+.description-item strong { color:#40739e; }
+
+/* Camera */
+#camera { width:100%; max-width:640px; border-radius:20px; margin-bottom:15px; }
+#overlay { position:absolute; top:0; left:0; }
+
+.camera-controls { text-align:center; margin-bottom:20px; }
+.camera-controls button { margin:0 10px; padding:10px 20px; border-radius:10px; cursor:pointer; border:none; background:#40739e; color:white; transition:0.3s; }
+.camera-controls button:hover { background:#273c75; }
+
+/* Animations */
+@keyframes fadeIn { 0% {opacity:0; transform:translateY(10px);} 100% {opacity:1; transform:translateY(0);} }
+</style>
+</head>
+<body>
+
+<!-- Particle Canvas -->
+<canvas id="particles"></canvas>
+
+<div class="hero">
+    <h1>Visionary AI Object Detection</h1>
+    <p>Upload images or detect objects in real-time. AI provides descriptions dynamically.</p>
+    <button id="showUpload">Upload Image</button>
+    <button id="showCamera">Real-Time Detection</button>
+</div>
+
+<!-- Upload Section -->
+<div class="section-container" id="uploadSection">
+    <button class="back-btn" onclick="goBack()">← Back</button>
+    <h2>Upload Image</h2>
+    <div class="upload-card" id="uploadCard">
+     <div class="upload-label">
+        <label for="fileInput">Drag & Drop image here or Click to Browse</label>
+        <br>
+        <input type="file" id="fileInput" accept="image/*">
+     </div>
+        <img id="preview">
+        <button class="upload-btn" id="uploadBtn">Detect Objects</button>
+        <div class="loader" id="uploadLoader"></div>
+        <canvas id="uploadOverlay"></canvas>
+        <div id="descriptionCard" style="display:none;"></div>
+    </div>
+</div>
+
+
+<!-- Camera Section -->
+<div class="section-container" id="cameraSection">
+    <button class="back-btn" onclick="goBack()">← Back</button>
+    <h2>Real-Time Camera Detection</h2>
+    <div style="position:relative;">
+        <video id="camera" width="640" height="480" autoplay muted></video>
+        <canvas id="overlay" width="640" height="480"></canvas>
+    </div>
+    <div class="camera-controls">
+        <button id="startCamera">Start Camera</button>
+        <button id="stopCamera">Stop Camera</button>
+    </div>
+    <div class="loader" id="cameraLoader"></div>
+</div>
+
+<script>
+// === Particle Background ===
+const canvas = document.getElementById("particles");
+canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+const ctxP = canvas.getContext("2d");
+const particles = [];
+for(let i=0;i<150;i++) particles.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*2+1, dx:(Math.random()-0.5)/1.5, dy:(Math.random()-0.5)/1.5});
+function animateParticles(){
+    ctxP.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+        p.x+=p.dx; p.y+=p.dy;
+        if(p.x<0||p.x>canvas.width) p.dx*=-1;
+        if(p.y<0||p.y>canvas.height) p.dy*=-1;
+        ctxP.beginPath(); ctxP.arc(p.x,p.y,p.r,0,Math.PI*2); ctxP.fillStyle="rgba(255,255,255,0.4)"; ctxP.fill();
+    });
+    requestAnimationFrame(animateParticles);
+}
+animateParticles();
+window.addEventListener("resize",()=>{canvas.width=window.innerWidth; canvas.height=window.innerHeight;});
+
+// === Section Logic ===
+const hero=document.querySelector(".hero");
+const uploadSection=document.getElementById("uploadSection");
+const cameraSection=document.getElementById("cameraSection");
+document.getElementById("showUpload").onclick=()=>{hero.style.display="none"; uploadSection.classList.add("active");};
+document.getElementById("showCamera").onclick=()=>{hero.style.display="none"; cameraSection.classList.add("active");};
+
+function goBack() {
+    window.location.reload();
+}
+// === Upload Logic ===
+const fileInput=document.getElementById("fileInput");
+const preview=document.getElementById("preview");
+const uploadCard=document.getElementById("uploadCard");
+const uploadOverlay=document.getElementById("uploadOverlay");
+const ctxUpload=uploadOverlay.getContext("2d");
+const uploadBtn=document.getElementById("uploadBtn");
+const uploadLoader=document.getElementById("uploadLoader");
+const descriptionCard=document.getElementById("descriptionCard");
+
+function clearUpload(){
+    ctxUpload.clearRect(0,0,uploadOverlay.width,uploadOverlay.height);
+    preview.src=""; preview.style.display="none";
+    descriptionCard.innerHTML=""; descriptionCard.style.display="none";
+}
+function clearDescription() {
+    descriptionCard.innerHTML = "";
+    descriptionCard.style.display = "none";
+}
+
+function showPreview(file){
+    if(!file) return;
+    clearUpload();
+    const reader=new FileReader();
+    reader.onload=e=>{ preview.src=e.target.result; preview.style.display="block"; uploadOverlay.width=preview.width; uploadOverlay.height=preview.height; };
+    reader.readAsDataURL(file);
+}
+
+uploadCard.addEventListener("dragover",e=>{ e.preventDefault(); uploadCard.classList.add("dragover"); });
+uploadCard.addEventListener("dragleave",e=>{ e.preventDefault(); uploadCard.classList.remove("dragover"); });
+uploadCard.addEventListener("drop",e=>{ e.preventDefault(); uploadCard.classList.remove("dragover"); const file=e.dataTransfer.files[0]; fileInput.files=e.dataTransfer.files; showPreview(file); });
+fileInput.addEventListener("change",e=>showPreview(e.target.files[0]));
+
+uploadBtn.onclick=async()=>{
+    if(!fileInput.files[0]) return alert("Select image first!");
+    descriptionCard.style.display="block";
+    clearDescription(); uploadLoader.style.display="block";
+    const formData=new FormData(); formData.append("file",fileInput.files[0]);
+    const response=await fetch("/upload-image",{method:"POST",body:formData});
+    const data=await response.json();
+    const addedDesc=new Set();
+        if (!data.objects || !Array.isArray(data.objects) || data.objects.length === 0) {
+            const noObjItem = document.createElement("div");
+            noObjItem.className = "description-item";
+            noObjItem.innerHTML = `<p><strong>No objects detected.</strong> The AI was unable to recognize anything in the image.</p>`;
+            descriptionCard.appendChild(noObjItem);
+            descriptionCard.style.display = "block";
+
+        }else {
+        data.objects.forEach(obj => {
+            if (!addedDesc.has(obj.name)) {
+                const item = document.createElement("div");
+                item.className = "description-item";
+    
+                // Format text with headings and bullet points
+                item.innerHTML = `  
+                    <h3 style="font-size:20px; font-weight:bold; margin-bottom:5px; color:#40739e; text-decoration: underline;">${obj.name}</h3
+                    ${obj.description ? `<p><strong>Description:</strong> ${obj.description}</p>` : ""}
+                    ${obj.usage ? `<p><strong>Usage:</strong> ${obj.usage}</p>` : ""}
+                    ${obj.benefits ? `<p><strong>Benefits:</strong> ${obj.benefits}</p>` : ""}
+                    ${obj.origin ? `<p><strong>Origin:</strong> ${obj.origin}</p>` : ""}
+                    ${obj.summary ? `<p><strong>Summary:</strong> ${obj.summary}</p>` : ""}
+                `;
+    
+                descriptionCard.appendChild(item);
+                addedDesc.add(obj.name);
+            }
+        });
+    }
+    if(addedDesc.size>0) descriptionCard.style.display="block";
+    uploadLoader.style.display="none";
+};
+
+// === Camera Logic ===
+let video=document.getElementById("camera");
+let overlay=document.getElementById("overlay");
+let ctx=overlay.getContext("2d");
+let stream; let detecting=false; let lastFrame=null;
+
+document.getElementById("startCamera").onclick=async()=>{
+    stream=await navigator.mediaDevices.getUserMedia({video:true});
+    video.srcObject=stream;
+    overlay.width=video.videoWidth||640; overlay.height=video.videoHeight||480;
+    const checkFrame=async()=>{
+        if(!video.videoWidth) return requestAnimationFrame(checkFrame);
+        const tempCanvas=document.createElement("canvas"); tempCanvas.width=video.videoWidth; tempCanvas.height=video.videoHeight;
+        const tempCtx=tempCanvas.getContext("2d"); tempCtx.drawImage(video,0,0);
+        const frameData=tempCtx.getImageData(0,0,tempCanvas.width,tempCanvas.height);
+        let diff=0;
+        if(lastFrame){
+            for(let i=0;i<frameData.data.length;i+=4) diff+=Math.abs(frameData.data[i]-lastFrame.data[i]);
+            diff/=frameData.data.length;
+        }
+        if(!detecting && (!lastFrame || diff>2)){
+            detecting=true; lastFrame=frameData;
+            document.getElementById("cameraLoader").style.display="block";
+            ctx.clearRect(0,0,overlay.width,overlay.height);
+            const blob=await new Promise(res=>tempCanvas.toBlob(res,"image/jpeg"));
+            const formData=new FormData(); formData.append("frame",blob,"frame.jpg");
+            const response=await fetch("/camera-feed",{method:"POST",body:formData});
+            const data=await response.json();
+            data.objects.forEach(obj=>{
+                const x=obj.x1,y=obj.y1,w=obj.x2-obj.x1,h=obj.y2-obj.y1;
+                ctx.strokeStyle="red"; ctx.lineWidth=2; ctx.strokeRect(x,y,w,h);
+                ctx.fillStyle="red"; ctx.font="16px Arial"; ctx.fillText(obj.name,x+5,y-5);
+            });
+            document.getElementById("cameraLoader").style.display="none";
+            detecting=false;
+        }
+        requestAnimationFrame(checkFrame);
+    };
+    requestAnimationFrame(checkFrame);
+};
+
+document.getElementById("stopCamera").onclick=()=>{ if(stream) stream.getTracks().forEach(t=>t.stop()); ctx.clearRect(0,0,overlay.width,overlay.height); document.getElementById("cameraLoader").style.display="none"; };
+function stopCameraStream(){ if(stream) stream.getTracks().forEach(t=>t.stop()); }
+</script>
 </body>
 </html>
