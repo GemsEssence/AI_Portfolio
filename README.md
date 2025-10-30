@@ -12,6 +12,7 @@ ai-portfolio/
 ├── object_detect-info/
 ├── fashion_search_bot/
 ├── LegalMind/
+├── ai-medi-bot/
 ├── run_all.sh                       # Master launcher script
 ├── ai_project_hub/                  # Dashboard project
 ├── requirements.txt                 # Single requirements file for all apps
