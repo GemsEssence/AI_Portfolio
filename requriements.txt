@@ -62,4 +62,7 @@ pydantic_settings
 flask
 langchain_huggingface
 
+pillow
+google-generativeai
+
 

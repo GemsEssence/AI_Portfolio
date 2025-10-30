@@ -24,6 +24,7 @@ APPS["fashion_search_bot"]="8003 uvicorn backend.main:app --reload"
 APPS["LegalMind"]="8004 uvicorn app:app --reload"
 APPS["object_detect-info"]="8005 uvicorn app.orchestrator:app --reload"
 APPS["Personalized_Shopping_Recommendation"]="8006 uvicorn backend.main:app --reload"
+APPS["ai-medi-bot"]="8007 uvicorn app.main:app --reload"
 APPS["review-analzer"]="5000 python app.py"
 
 echo "🔹 Starting all AI apps..."

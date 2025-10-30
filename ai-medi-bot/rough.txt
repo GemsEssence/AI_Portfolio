@@ -1,0 +1,28 @@
+ai_medibot/
+├── app/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── routers/
+│   │   ├── __init__.py
+│   │   ├── text_input.py
+│   │   ├── voice_input.py
+│   │   └── image_input.py
+│   ├── services/
+│   │   ├── __init__.py
+│   │   ├── nlp_model.py
+│   │   ├── voice_transcriber.py
+│   │   └── image_analyzer.py
+│   └── utils/
+│       ├── __init__.py
+│       ├── translator.py
+│       └── security.py
+├── frontend/
+│   ├── templates/
+│   │   └── index.html
+│   └── static/
+│       ├── style.css
+│       └── script.js
+├── .env                # put keys here
+├── requirements.txt
+└── README.md
+

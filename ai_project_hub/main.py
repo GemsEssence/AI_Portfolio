@@ -21,6 +21,7 @@ async def dashboard(request: Request):
         {"name": "LegalMind", "desc": "AI-powered legal document summarizer", "url": "http://127.0.0.1:8004"},
         {"name": "Object Detection", "desc": "YOLO-powered object detection", "url": "http://127.0.0.1:8005"},
         {"name": "Personalized Shopping Recommender", "desc": "AI recommendations for products", "url": "http://127.0.0.1:8006"},
+        {"name": "AI MediBot", "desc": "AI-powered healthcare assistant", "url": "http://127.0.0.1:8007"},
         {"name": "Review Analyzer", "desc": "Sentiment and keyword analysis", "url": "http://127.0.0.1:5000"},
     ]
     return templates.TemplateResponse("index.html", {"request": request, "apps": apps})
