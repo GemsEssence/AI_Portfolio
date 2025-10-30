@@ -1,3 +1,6 @@
+
+## AI MediBot
+### Folder Structure
 ``` bash 
 ai_medibot/
 ├── app/
