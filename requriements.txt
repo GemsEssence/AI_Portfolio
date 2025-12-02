@@ -64,5 +64,8 @@ langchain_huggingface
 
 pillow
 google-generativeai
+email-validator
+psycopg2-binary
 
+googletrans
 

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trade Intelligence Agent</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+    /* --- VARIABLES & RESET --- */
+    :root {
+        --primary: #2563eb;
+        --primary-grad: linear-gradient(135deg, #2563eb, #7c3aed);
+        --bg-dynamic: #f0f9ff;
+        --glass-surface: rgba(255, 255, 255, 0.75);
+        --glass-border: rgba(255, 255, 255, 0.6);
+        --text-main: #1e293b;
+        --text-light: #64748b;
+        --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.1);
+        --shadow-glow: 0 0 20px rgba(37, 99, 235, 0.3);
+    }
+    
+    body {
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--text-main);
+        overflow: hidden;
+        background-color: var(--bg-dynamic);
+        background-image: 
+            radial-gradient(at 0% 0%, hsla(253,16%,7%,0) 0, transparent 50%), 
+            radial-gradient(at 50% 0%, hsla(225,39%,30%,0) 0, transparent 50%), 
+            radial-gradient(at 100% 0%, hsla(339,49%,30%,0) 0, transparent 50%);
+    }
+    
+    body::before, body::after {
+        content: ''; position: absolute; width: 120%; height: 120%; z-index: -1; filter: blur(60px); opacity: 0.6;
+    }
+    body::before { background: radial-gradient(circle, rgba(37, 99, 235, 0.2) 0%, transparent 70%); animation: floatBlob 15s infinite alternate; }
+    body::after { background: radial-gradient(circle, rgba(124, 58, 237, 0.2) 0%, transparent 70%); animation: floatBlob 20s infinite alternate-reverse; }
+    
+    @keyframes floatBlob {
+        0% { transform: translate(-10%, -10%); }
+        100% { transform: translate(10%, 10%); }
+    }
+    
+    /* --- CONTAINER --- */
+    .agent-container {
+        width: 100%; max-width: 900px; height: 90vh; border-radius: 24px;
+        background: var(--glass-surface); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border); box-shadow: var(--shadow-soft);
+        display: flex; flex-direction: column; position: relative; overflow: hidden;
+    }
+    
+    .agent-header {
+        padding: 20px 24px; border-bottom: 1px solid rgba(0,0,0,0.05);
+        display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.5);
+    }
+    .agent-header h1 { font-size: 18px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 10px; color: var(--text-main); }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2); animation: pulse-dot 2s infinite; }
+    
+    @keyframes pulse-dot {
+        0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+        70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    
+    /* --- CHAT --- */
+    .chat-window {
+        flex: 1; padding: 24px; overflow-y: auto; background: transparent;
+        display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth;
+    }
+    .chat-window::-webkit-scrollbar { width: 6px; }
+    .chat-window::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
+    
+    .message {
+        max-width: 80%; padding: 14px 18px; border-radius: 18px; position: relative;
+        animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        font-size: 15px; line-height: 1.5; 
+        white-space: pre-wrap; /* Preserves newlines */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    
+    .message.user { align-self: flex-end; background: var(--primary-grad); color: white; border-bottom-right-radius: 4px; }
+    .message.bot { align-self: flex-start; background: rgba(255,255,255,0.9); border: 1px solid rgba(255,255,255,0.5); border-bottom-left-radius: 4px; }
+    
+    /* --- TABLES --- */
+    table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 12px; font-size: 13px; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; }
+    table th { background: #f8fafc; padding: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; font-size: 11px; }
+    table td { padding: 12px; border-bottom: 1px solid #f1f5f9; background: white; color: #334155; }
+    
+    /* --- INPUT --- */
+    .input-area { display: flex; align-items: center; gap: 12px; padding: 20px; background: rgba(255,255,255,0.6); backdrop-filter: blur(10px); border-top: 1px solid rgba(255,255,255,0.5); }
+    .chat-input { flex: 1; padding: 14px 20px; border-radius: 99px; border: 1px solid #e2e8f0; font-size: 15px; outline: none; background: rgba(255,255,255,0.9); }
+    .chat-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); background: #fff; }
+    .send-btn { padding: 14px 28px; background: var(--primary-grad); color: #fff; border: none; border-radius: 99px; cursor: pointer; font-weight: 600; }
+    .mic-btn { padding: 12px; background: white; color: #64748b; border: 1px solid #e2e8f0; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; }
+    .mic-btn:hover { color: var(--primary); border-color: var(--primary); background: #eff6ff; }
+
+    /* --- EMAIL --- */
+    .email-confirm { margin-top: 15px; display: flex; gap: 10px; }
+    .email-confirm button { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+    .email-yes { background: #10b981; color: white; }
+    .email-no { background: #fee2e2; color: #ef4444; }
+
+    /* --- VOICE OVERLAY --- */
+    .voice-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(30px); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.3s; padding: 20px; box-sizing: border-box; }
+    .voice-overlay.hidden { opacity: 0; pointer-events: none; }
+    .close-voice-btn { position: absolute; top: 30px; right: 30px; background: white; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 20px; color: #64748b; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+    
+    .voice-visualizer-wrapper { cursor: pointer; display: flex; flex-direction: column; align-items: center; margin-bottom: 30px; position: relative; flex-shrink: 0; }
+    .voice-visualizer { width: 80px; height: 80px; background: var(--primary-grad); border-radius: 50%; transition: all 0.3s; z-index: 2; }
+    .voice-visualizer::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 50%; border: 2px solid var(--primary); opacity: 0; z-index: 1; }
+    
+    .voice-visualizer.pulsing { animation: corePulse 1.5s infinite; }
+    .voice-visualizer.pulsing::after { animation: ripple 1.5s infinite; }
+    .voice-visualizer.speaking { background: linear-gradient(135deg, #10b981, #059669); animation: speakBounce 0.4s infinite alternate; }
+    
+    @keyframes corePulse { 0% { transform: scale(0.95); } 70% { transform: scale(1); } 100% { transform: scale(0.95); } }
+    @keyframes ripple { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(2.5); opacity: 0; } }
+    @keyframes speakBounce { from { transform: scale(1); } to { transform: scale(1.15); } }
+
+    .voice-status { font-size: 18px; color: #1e293b; font-weight: 600; margin-top: 20px; }
+    .tap-hint { font-size: 13px; color: #94a3b8; margin-top: 6px; font-weight: 500;}
+    .live-transcript { font-size: 24px; font-weight: 700; color: #0f172a; text-align: center; max-width: 800px; margin-bottom: 20px; min-height: 40px; flex-shrink: 0; }
+    
+    .voice-reply-area {
+        font-size: 18px; color: #334155; text-align: center; max-width: 700px; width: 90%;
+        padding: 25px; background: white; border-radius: 20px; box-shadow: 0 10px 40px -5px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5); line-height: 1.6;
+        max-height: 40vh; overflow-y: auto; scroll-behavior: smooth;
+        white-space: pre-wrap; /* Keeps lines separated in voice view */
+    }
+</style>
+</head>
+<body>
+<div class="agent-container">
+
+    <div id="voice-overlay" class="voice-overlay hidden">
+        <button class="close-voice-btn" onclick="stopVoiceMode()" title="Close Voice Mode">✕</button>
+        <div class="voice-visualizer-wrapper" onclick="interruptAndListen()" title="Tap to interrupt">
+             <div id="voice-viz" class="voice-visualizer"></div>
+             <div id="voice-status" class="voice-status">Initialize...</div>
+             <div class="tap-hint">(Tap circle to interrupt)</div>
+        </div>
+        <div id="live-transcript" class="live-transcript"></div>
+        <div id="voice-reply-area" class="voice-reply-area"><i>Replies will appear here...</i></div>
+    </div>
+    
+    <div class="agent-header">
+        <h1><span class="status-dot"></span>Trade Intelligence Agent</h1>
+        <small style="color:#6b7280">Powered by AI</small>
+    </div>
+
+    <div class="chat-window" id="chat-window">
+        <div class="message bot">
+            👋 Hello! Ask me to analyze shipments or draft emails.<br>
+           <i>"<b>Eg:</b> Show me top 10 exports of India..." </i>
+        </div>
+    </div>
+
+    <div class="input-area">
+        <button id="mic-btn" class="mic-btn" onclick="startVoiceMode()"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" /></svg></button>
+        <input id="query" class="chat-input" placeholder="Type your question..." onkeydown="if(event.key==='Enter') handleTypedSend()">
+        <button class="send-btn" onclick="handleTypedSend()">Send</button>
+    </div>
+
+</div>
+
+<script>
+    let pendingEmail = null; 
+    const micBtn = document.getElementById('mic-btn');
+    const chatWindow = document.getElementById("chat-window");
+    const voiceOverlay = document.getElementById('voice-overlay');
+    const liveTranscript = document.getElementById('live-transcript');
+    const voiceReplyArea = document.getElementById('voice-reply-area');
+    const voiceViz = document.getElementById('voice-viz');
+    const voiceStatus = document.getElementById('voice-status');
+    
+    // --- Speech Setup ---
+    let recognition;
+    let isVoiceModeActive = false;
+    let isBotSpeaking = false; 
+    const synth = window.speechSynthesis;
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.continuous = true; 
+        recognition.interimResults = true; 
+        recognition.lang = 'en-US'; 
+
+        recognition.onstart = function() {
+            if(!isBotSpeaking) {
+                voiceViz.className = 'voice-visualizer pulsing'; 
+                voiceStatus.textContent = "Listening...";
+            }
+        };
+
+        recognition.onresult = function(event) {
+            if (isBotSpeaking) return; // Ignore input if bot is speaking
+
+            let interim = '';
+            let final = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) final += event.results[i][0].transcript; 
+                else interim += event.results[i][0].transcript; 
+            }
+
+            if (final) {
+                voiceViz.classList.remove('pulsing');
+                liveTranscript.innerHTML = final;
+                recognition.stop(); 
+                handleVoiceQuery(final);
+            } else {
+                liveTranscript.innerHTML = '<span class="interim">' + interim + '</span>';
+            }
+        };
+
+        recognition.onerror = function(event) {
+            if(event.error !== 'no-speech') {
+                voiceViz.classList.remove('pulsing');
+            }
+        };
+        
+        recognition.onend = function() {
+            if (isVoiceModeActive && !isBotSpeaking) {
+                try { recognition.start(); } catch(e) {}
+            }
+        };
+    } else {
+        micBtn.style.display = 'none';
+    }
+
+    // --- Voice Controls ---
+    function startVoiceMode() {
+        stopSpeaking(); 
+        isVoiceModeActive = true;
+        voiceOverlay.classList.remove('hidden');
+        liveTranscript.innerHTML = '';
+        voiceReplyArea.innerHTML = '<i>Replies will appear here...</i>';
+        voiceStatus.textContent = "Initializing...";
+        try { recognition.start(); } catch(e) {}
+    }
+
+    function stopVoiceMode() {
+        isVoiceModeActive = false;
+        recognition.stop();
+        stopSpeaking(); 
+        voiceOverlay.classList.add('hidden');
+        voiceStatus.textContent = "";
+    }
+
+    function interruptAndListen() {
+        if(!isVoiceModeActive) return;
+        stopSpeaking(); 
+        voiceStatus.textContent = "Interrupted! Listening...";
+        isBotSpeaking = false; 
+        try { recognition.start(); } catch(e) {} 
+    }
+
+    // --- VISUAL FORMATTER: Turns **bold** into <b>bold</b> ---
+    function formatTextForDisplay(text) {
+        if (!text) return "";
+        // Regex: Finds **word** and replaces with <b>word</b>
+        return text.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
+    }
+
+    // --- AUDIO CLEANER: Removes symbols for Speech ---
+    function cleanTextForSpeech(text) {
+        return text
+            .replace(/<[^>]*>?/gm, ' ')   // Remove HTML
+            .replace(/\|/g, ' ')          // Remove pipes
+            .replace(/\*\*/g, '')         // Remove bold stars
+            .replace(/\*/g, '')           // Remove bullets
+            .replace(/`/g, '')            // Remove code ticks
+            .replace(/ID:/g, 'I D ')      // Better pronunciation
+            .replace(/\n/g, '. ')         // Pause on new lines
+            .trim();
+    }
+
+    // --- Text-to-Speech ---
+    function speakText(text) {
+        synth.cancel();
+        // Turn OFF mic while speaking to prevent self-interruption
+        try { recognition.stop(); } catch(e) {}
+
+        let plainText = cleanTextForSpeech(text);
+        if (plainText.length > 800 && text.includes("|---|")) {
+            plainText = "I have found the data. Please check the screen for details.";
+        }
+
+        const utterance = new SpeechSynthesisUtterance(plainText);
+        
+        utterance.onstart = () => {
+             isBotSpeaking = true; 
+             voiceViz.className = 'voice-visualizer speaking'; 
+             voiceStatus.textContent = "Bot speaking... (Tap circle to interrupt)";
+        };
+        
+        utterance.onend = () => {
+             isBotSpeaking = false; 
+             voiceViz.className = 'voice-visualizer pulsing';
+             voiceStatus.textContent = "Listening...";
+             // Turn ON mic when finished
+             if(isVoiceModeActive) { try { recognition.start(); } catch(e) {} }
+        };
+
+        utterance.onerror = () => {
+             isBotSpeaking = false;
+             if(isVoiceModeActive) { try { recognition.start(); } catch(e) {} }
+        };
+
+        synth.speak(utterance);
+    }
+
+    function stopSpeaking() {
+        if (synth.speaking) synth.cancel();
+        isBotSpeaking = false;
+        voiceViz.className = 'voice-visualizer pulsing';
+    }
+
+    // --- Backend Logic ---
+    async function handleTypedSend() {
+        const input = document.getElementById("query");
+        const msg = input.value.trim();
+        if (!msg) return;
+        appendMessage(msg, "user");
+        input.value = "";
+        appendMessage("<i>Typing...</i>", "bot");
+        const result = await fetchAgent(msg);
+        removeTyping();
+        processAgentResponse(result, false); 
+    }
+
+    async function handleVoiceQuery(msg) {
+        appendMessage(msg, "user");
+        appendMessage("<i>Thinking...</i>", "bot");
+        voiceStatus.textContent = "Thinking...";
+        const result = await fetchAgent(msg);
+        removeTyping();
+        processAgentResponse(result, true);
+    }
+
+    async function fetchAgent(query) {
+        try {
+            const response = await fetch("/agent", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query: query })
+            });
+            return await response.json();
+        } catch (e) { return { response: "⚠️ Error connecting to agent." }; }
+    }
+
+    function processAgentResponse(result, isVoiceMode) {
+        if (result.email_preview) {
+            // Email handling
+            pendingEmail = result.email_preview;
+            const emailMsg = `I have drafted an email to ${result.email_preview.to}.`;
+            if(isVoiceMode) {
+                 voiceReplyArea.innerHTML = emailMsg + "<br><br>(Please click X)";
+                 speakText(emailMsg);
+            }
+            showEmailConfirmation(result.email_preview);
+            return;
+        }
+
+        let htmlResponse = "";
+
+        if (Array.isArray(result.response)) {
+            htmlResponse = generateTableHtml(result.response);
+        } else if (result.response && result.response.includes("|---|")) {
+            htmlResponse = generateMarkdownHtml(result.response);
+        } else {
+            // APPLY FORMATTER HERE for standard text
+            htmlResponse = formatTextForDisplay(result.response);
+        }
+
+        if (isVoiceMode) {
+            // Show formatted text in voice overlay too
+            voiceReplyArea.innerHTML = htmlResponse; 
+            appendMessage(htmlResponse, "bot");
+            // Speak original text (it gets cleaned inside speakText)
+            speakText(result.response); 
+        } else {
+            appendMessage(htmlResponse, "bot");
+        }
+    }
+
+    // --- Helper Functions ---
+    function appendMessage(text, type) {
+        const div = document.createElement("div");
+        div.className = `message ${type}`;
+        div.innerHTML = text;
+        chatWindow.appendChild(div);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+    function removeTyping() {
+        const t = document.querySelectorAll(".message.bot i");
+        t.forEach(el => {
+            if(el.textContent === "Thinking..." || el.textContent === "Typing...") el.parentElement.remove();
+        });
+    }
+    function generateTableHtml(rows) {
+        if (rows.length === 0) return "No results.";
+        const headers = Object.keys(rows[0]);
+        let html = `<table><tr>`;
+        headers.forEach(h => html += `<th>${h}</th>`);
+        html += `</tr>`;
+        rows.forEach(r => {
+            html += "<tr>";
+            headers.forEach(h => html += `<td>${r[h] ?? ''}</td>`);
+            html += "</tr>";
+        });
+        return html + `</table>`;
+    }
+    function generateMarkdownHtml(md) {
+        const lines = md.trim().split("\n");
+        if (lines.length < 2) return md;
+        const headers = lines[0].split("|").map(h => h.trim()).filter(Boolean);
+        const rows = lines.slice(2).map(line => line.split("|").map(cell => cell.trim()).filter(Boolean));
+        let html = `<table><tr>`;
+        headers.forEach(h => html += `<th>${h}</th>`);
+        html += `</tr>`;
+        rows.forEach(r => {
+            html += "<tr>";
+            r.forEach(cell => html += `<td>${cell}</td>`);
+            html += "</tr>";
+        });
+        return html + `</table>`;
+    }
+    function showEmailConfirmation(email) {
+        const div = document.createElement("div");
+        div.className = "message bot";
+        div.innerHTML = `<b>Email drafted:</b><br><b>To:</b> ${email.to}<br><b>Subject:</b> ${email.subject}<br><div>${email.body}</div><div class="email-confirm"><button class="email-yes" onclick="confirmEmail(true)">Yes, send</button><button class="email-no" onclick="confirmEmail(false)">No</button></div>`;
+        chatWindow.appendChild(div);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+    async function confirmEmail(send) {
+        if (!pendingEmail) return;
+        if (send) {
+            appendMessage("<i>Sending email...</i>", "bot");
+            try {
+                const response = await fetch("/send-email", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(pendingEmail) });
+                const result = await response.json();
+                removeTyping();
+                appendMessage("📨 " + result.status, "bot");
+            } catch (e) { removeTyping(); appendMessage("⚠️ Failed to send email.", "bot"); }
+        } else { appendMessage("❌ Email sending canceled.", "bot"); }
+        pendingEmail = null;
+    }
+</script>
+</body>
+</html>

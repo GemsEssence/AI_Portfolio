@@ -21,7 +21,7 @@ def update_memory(session_id: str, user_msg: str, bot_reply: str):
 
 async def process_text(session_id: str, text: str) -> str:
     """
-    Continue chat with memory.
+    Continue conversation with persistent memory.
     Detect if user asks for medicine and respond appropriately.
     """
     prev_context = get_memory(session_id)
@@ -38,7 +38,7 @@ async def process_text(session_id: str, text: str) -> str:
     # --- Step 2: Custom prompt for medicine suggestions ---
     if is_medicine_request:
         prompt = f"""
-        You are MediBot, an AI dermatologist with friendly and responsible communication style.
+        You are MediBot, a friendly and professional AI healthcare assistant (general doctor) known for empathetic and responsible communication.
 
         Context from previous conversation:
         {prev_context}
@@ -46,18 +46,20 @@ async def process_text(session_id: str, text: str) -> str:
         The user asked: "{text}"
 
         Respond by:
-        - Suggesting **only mild, over-the-counter (OTC)** medicines or topical creams.
-        - Include 2-3 safe, well-known options like benzoyl peroxide gel, salicylic acid cream, hydrocortisone 1%, etc.
-        - Mention what each does in simple language.
-        - Add home-care or natural remedies if appropriate.
-        - Be clear, empathetic, and concise.
-        - NEVER recommend strong antibiotics, steroids, or prescription-only drugs.
+        - Suggesting **only mild, over-the-counter (OTC)** medicines or safe topical creams if relevant.  
+        - Recommending suitable medicines for the mentioned condition (if identifiable).  
+        - Briefly explaining what each medicine does in simple, patient-friendly language.  
+        - Including helpful **home-care tips** or **natural remedies** when appropriate.  
+        - Keeping your tone **clear, empathetic, concise, and medically accurate**.  
+        - Using previous context to maintain continuity and avoid repetition.  
+        - Never recommend strong antibiotics, steroids, or prescription-only drugs.  
+        - If symptoms are serious or uncertain, politely advise the user to consult a real doctor.  
         """
 
     else:
         # --- Step 3: General follow-up conversation ---
         prompt = f"""
-        You are MediBot, a compassionate AI dermatologist having a follow-up chat.
+        You are MediBot, a compassionate AI healthcare assistant (doctor) having a follow-up chat.
         Here is the previous context with this user:
         {prev_context}
 
@@ -65,7 +67,7 @@ async def process_text(session_id: str, text: str) -> str:
 
         Respond naturally and kindly.
         - If user follows up about their condition, answer contextually.
-        - Avoid repetition. Use prior memory for continuity.
+        - Avoid repetition. Use prior memory for continuity,remember previous context.
         - If user changes topic, adapt smoothly.
         """
 

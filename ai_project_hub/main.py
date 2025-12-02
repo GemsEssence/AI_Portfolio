@@ -23,5 +23,6 @@ async def dashboard(request: Request):
         {"name": "Personalized Shopping Recommender", "desc": "AI recommendations for products", "url": "http://127.0.0.1:8006"},
         {"name": "AI MediBot", "desc": "AI-powered healthcare assistant", "url": "http://127.0.0.1:8007"},
         {"name": "Review Analyzer", "desc": "Sentiment and keyword analysis", "url": "http://127.0.0.1:5000"},
+        {"name": "Trade Intelligence Agent", "desc": "AI trade insights, SQL querying & smart email automation", "url": "http://127.0.0.1:8008"},
     ]
     return templates.TemplateResponse("index.html", {"request": request, "apps": apps})

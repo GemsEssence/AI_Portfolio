@@ -1,0 +1,33 @@
+trade_intel_app/
+│
+├── .env                     # Configuration keys (API, DB, Email)
+├── requirements.txt         # List of libraries to install
+├── main.py                  # The entry point (FastAPI Server)
+│
+├── database/                # Database Logic
+│   ├── __init__.py          # (Create an empty file with this name)
+│   ├── connection.py        # Connects to DB & seeds fake data
+│   └── models.py            # Database Table definitions
+│
+├── services/                # Business Logic
+│   ├── __init__.py          # (Create an empty file with this name)
+│   ├── agent_service.py     # The AI Agent (Gemini)
+│   └── email_service.py     # Email sending logic
+│
+└── templates/               # Frontend UI
+    └── index.html           # The Dashboard & Chatbot HTML
+
+
+
+    uvicorn main:app --reload
+
+
+<div class="hero">
+    <h1>Trade Intelligence <span class="ai-text">Powered by AI</span></h1>
+    <p>Discover insights from global shipment data. Search suppliers, buyers, markets & more in real-time.</p>
+</div>
+
+    .hero { text-align:center; padding:80px 20px; background:linear-gradient(180deg,#ffffff,#eef3ff); border-bottom:1px solid #dce3f7;}
+    .hero h1 { font-size:52px; font-weight:800; color:#0d1b3d; }
+    .ai-text { color:#2a55ff; }
+    .hero p { font-size:20px; margin-top:12px; opacity:0.8; max-width:800px; margin:auto; }

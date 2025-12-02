@@ -30,6 +30,12 @@ body {
   color: white;
   padding: 1rem;
   text-align: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: stretch;
+  align-items: flex-end;
+  justify-content: space-around;
 }
 
 .chat-header h1 {
@@ -212,5 +218,41 @@ body {
       transform: translateY(0);
     }
   }
+
+  /* 🌐 Language Selector Styling */
+.language-select {
+  background: #f5f7fa;
+  border: 1px solid #c8d6e5;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  margin-right: 8px;
+  color: #333;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.language-select:hover {
+  background: #e8f0fe;
+  border-color: #90caf9;
+}
+
+.language-select:focus {
+  border-color: #1e88e5;
+  box-shadow: 0 0 5px rgba(30, 136, 229, 0.3);
+}
+
+/* Keep alignment neat on small screens */
+@media (max-width: 600px) {
+  .chat-input-area {
+    flex-wrap: wrap;
+  }
+
+  .language-select {
+    flex: 1 1 100%;
+    margin: 5px 0;
+  }
+}
+
   
   

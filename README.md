@@ -15,6 +15,7 @@ ai-portfolio/
 ├── ai-medi-bot/
 ├── run_all.sh                       # Master launcher script
 ├── ai_project_hub/                  # Dashboard project
+├── trade_agent/                     # agentic ai project
 ├── requirements.txt                 # Single requirements file for all apps
 └── README.md
 ```
