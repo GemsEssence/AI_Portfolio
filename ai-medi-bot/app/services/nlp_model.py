@@ -1,7 +1,9 @@
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv
+from google.api_core.exceptions import ResourceExhausted
 
+# Load environment variables and configure API (already done in main app)
 load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
@@ -33,7 +35,8 @@ async def process_text(session_id: str, text: str) -> str:
     ]
     is_medicine_request = any(k in text_lower for k in medicine_keywords)
 
-    model = genai.GenerativeModel("gemini-2.0-flash")
+    # 🛑 CRITICAL FIX: Change to the working model
+    model = genai.GenerativeModel("gemini-2.5-flash")
 
     # --- Step 2: Custom prompt for medicine suggestions ---
     if is_medicine_request:
@@ -67,18 +70,27 @@ async def process_text(session_id: str, text: str) -> str:
 
         Respond naturally and kindly.
         - If user follows up about their condition, answer contextually.
-        - Avoid repetition. Use prior memory for continuity,remember previous context.
+        - Avoid repetition. Use prior memory for continuity, remember previous context.
         - If user changes topic, adapt smoothly.
         """
 
     try:
         response = model.generate_content(prompt)
         reply = response.text.strip()
+        
+    except ResourceExhausted as e:
+        # ✅ Handle 429 Quota Exceeded error specifically
+        print(f"[ERROR] Quota Exceeded (429): {e}")
+        reply = "⚠️ The AI system is temporarily overloaded (Quota Exceeded). Please try again in a moment."
+        
     except Exception as e:
+        # ✅ Handle all other errors
         print("Error:", e)
         reply = "⚠️ I'm having trouble processing your message right now. Please try again in a moment."
 
     # --- Step 4: Store new memory ---
-    update_memory(session_id, text, reply)
+    # Only store context if a valid reply was generated, not an error message
+    if not reply.startswith("⚠️"):
+        update_memory(session_id, text, reply)
 
     return reply
