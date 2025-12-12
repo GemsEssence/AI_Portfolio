@@ -283,7 +283,7 @@
 
     // --- Text-to-Speech ---
     function speakText(text) {
-        synth.cancel();
+        /*synth.cancel();
         // Turn OFF mic while speaking to prevent self-interruption
         try { recognition.stop(); } catch(e) {}
 
@@ -314,6 +314,13 @@
         };
 
         synth.speak(utterance);
+        */
+        if(isVoiceModeActive) {
+            isBotSpeaking = false;
+            voiceViz.className = 'voice-visualizer pulsing';
+            voiceStatus.textContent = "Listening...";
+            try { recognition.start(); } catch(e) {}
+        }
     }
 
     function stopSpeaking() {
