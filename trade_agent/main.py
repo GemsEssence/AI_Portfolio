@@ -3,10 +3,9 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from services.agent_service import ask_agent
 from database.connection import SessionLocal
-from database.models import Supplier, Shipment, Product
+from database.models import Supplier, Shipment, Product, Payment
 from pydantic import BaseModel
 from sqlalchemy import func, text, literal
-
 
 
 app = FastAPI()
@@ -68,44 +67,39 @@ def get_stats():
         "current_month_volume": format_number(current_month_volume),
         "previous_month_volume": format_number(previous_month_volume)
     }
-
 @app.get("/api/dashboard-insights")
 def get_dashboard_insights():
     db = SessionLocal()
 
-    # ---------- 1. TOP EXPORT CATEGORIES (Using Product Name) ----------
-    top_categories = (
+    date_window = func.current_date() - text("interval '6 months'")
+
+    # 1. Top 5 Export Categories
+    top_categories_raw = (
         db.query(
-            func.coalesce(Product.product_name, literal("Unknown")).label("product_name"),
-            func.sum(Shipment.value_usd).label("total_value")
+            func.coalesce(Product.product_name, literal("Misc Products")).label("product_name"),
+            func.coalesce(func.sum(Shipment.value_usd), 0).label("total_value")
         )
-        .join(Product, Shipment.hs_code == Product.hs_code, isouter=True)
-        .group_by(Product.product_name)
+        .outerjoin(Product, Shipment.product_id == Product.id)
+        .filter(Shipment.date >= date_window)
+        .group_by(func.coalesce(Product.product_name, literal("Misc Products")))
         .order_by(func.sum(Shipment.value_usd).desc())
-        .limit(4)
+        .limit(5)
         .all()
     )
 
-    total_export_value = db.query(func.sum(Shipment.value_usd)).scalar() or 1
-
+    total_export_value = sum([c.total_value for c in top_categories_raw]) or 1
     formatted_categories = [
-        {
-            "category": row.product_name,
-            "percentage": round((row.total_value / total_export_value) * 100, 1)
-        }
-        for row in top_categories
+        {"category": c.product_name, "percentage": round((c.total_value / total_export_value) * 100, 1)}
+        for c in top_categories_raw
     ]
 
-    # ---------- 2. FASTEST GROWING MARKETS ----------
-    current_month = func.date_trunc('month', func.current_date())
-    previous_month = func.date_trunc('month', func.current_date() - text("interval '1 month'"))
-
+    # 2. Fastest Growing Markets
     current_data = dict(
         db.query(
             Shipment.destination_country,
             func.coalesce(func.sum(Shipment.value_usd), 0)
         )
-        .filter(func.date_trunc('month', Shipment.date) == current_month)
+        .filter(Shipment.date >= date_window)
         .group_by(Shipment.destination_country)
         .all()
     )
@@ -115,46 +109,43 @@ def get_dashboard_insights():
             Shipment.destination_country,
             func.coalesce(func.sum(Shipment.value_usd), 0)
         )
-        .filter(func.date_trunc('month', Shipment.date) == previous_month)
+        .filter(Shipment.date < date_window)
+        .filter(Shipment.date >= func.current_date() - text("interval '12 months'"))
         .group_by(Shipment.destination_country)
         .all()
     )
 
-    growing_markets = []
-    for country, current_value in current_data.items():
-        prev_value = previous_data.get(country, 0)
-        growth = ((current_value - prev_value) / prev_value * 100) if prev_value > 0 and current_value > prev_value else 0
-        growing_markets.append({
-            "country": country,
-            "growth": round(growth, 1)
-        })
+    growing_markets = [
+        {
+            "country": country or "Unknown",
+            "growth": round(((current_value - previous_data.get(country, 0)) / previous_data.get(country, 1) * 100)
+                            if previous_data.get(country, 0) else (100 if current_value > 0 else 0), 1)
+        }
+        for country, current_value in current_data.items()
+    ]
 
-    growing_markets = sorted(growing_markets, key=lambda x: x["growth"], reverse=True)[:4]
+    growing_markets = sorted(growing_markets, key=lambda x: x["growth"], reverse=True)[:5]
 
-    # ---------- 3. BEST SUPPLIERS ----------
-    top_suppliers = (
+    # 3. Best Suppliers
+    top_suppliers_raw = (
         db.query(
-            Supplier.name,
-            func.sum(Shipment.value_usd).label("score")
+            Supplier.name.label("supplier_name"),
+            func.coalesce(func.sum(Shipment.value_usd), 0).label("total_value")
         )
-        .join(Shipment, Shipment.supplier_id == Supplier.id)
-        .filter(func.date_trunc('month', Shipment.date) == current_month)
+        .join(Shipment, Supplier.id == Shipment.supplier_id)
+        .filter(Shipment.date >= date_window)
         .group_by(Supplier.name)
         .order_by(func.sum(Shipment.value_usd).desc())
-        .limit(4)
+        .limit(5)
         .all()
     )
 
-    # Sum of all scores
-    total_score = sum(row.score for row in top_suppliers)
-
-    # Convert each score to percentage
+    total_score = sum([row.total_value for row in top_suppliers_raw]) or 1
     formatted_suppliers = [
-        {"name": row.name, "score": int(row.score), "percentage": round((row.score / total_score) * 100, 2)}
-        for row in top_suppliers
+        {"name": row.supplier_name or "Unknown", "percentage": round((row.total_value / total_score) * 100, 2),
+         "score": int(row.total_value)}
+        for row in top_suppliers_raw
     ]
-
-
 
     db.close()
 
