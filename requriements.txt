@@ -68,4 +68,5 @@ email-validator
 psycopg2-binary
 
 googletrans
+faker
 
