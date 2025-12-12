@@ -1,3 +1,4 @@
+
 import os
 import io
 import uuid
@@ -53,7 +54,7 @@ async def analyze_image_async(file: UploadFile, lang: str = "en") -> dict:
 
     try:
         # Step 2️⃣ - Initialize Gemini model
-        model = genai.GenerativeModel("gemini-2.0-flash")
+        model = genai.GenerativeModel("gemini-2.5-flash")
 
         # Convert image to bytes
         img_bytes = io.BytesIO()
@@ -73,7 +74,9 @@ async def analyze_image_async(file: UploadFile, lang: str = "en") -> dict:
             [{"role": "user", "parts": [check_prompt, {"mime_type": "image/png", "data": img_data}]}],
             generation_config={"temperature": 0.1},
         )
-
+        import time
+        time.sleep(15)
+        
         img_type = (check_response.text or "").lower().strip()
         print(f"[INFO] Detected image type: {img_type}")
 
