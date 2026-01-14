@@ -21,3 +21,11 @@ else:
 model = genai.GenerativeModel('gemini-2.5-flash')
 
 app = FastAPI(title="Hanuman Chalisa AI")
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+FRONTEND_DIR = BASE_DIR / "frontend"
+app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
+
+@app.get("/", response_class=HTMLResponse)
+async def index():
+    return (FRONTEND_DIR / "index.html").read_text(encoding="utf-8")
