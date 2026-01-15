@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ar">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quran AI Assistant - Pro</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+  
+  </head>
+  <body>
+
+
+    <div class="chat-wrapper">
+      <header>Quran Memorization Assistant</header>
+
+      <div id="accuracy-box" class="hidden">
+        <h2 id="score-text">Accuracy: 0%</h2>
+        <p id="stats-text"></p>
+        <button
+          class="btn btn-upload"
+          onclick="closeStatsAndReset()"
+          style="margin: 0 auto"
+        >
+          Practice Again
+        </button>
+      </div>
+
+      <div id="wordContainer">
+        <div
+          style="
+            color: #95a5a6;
+            font-size: 1.2rem;
+            margin-top: 50px;
+            width: 100%;
+            text-align: center;
+          "
+        >
+          Upload a PDF to start...
+        </div>
+      </div>
+
+      <div class="controls">
+        <input
+          type="file"
+          id="fileInput"
+          class="hidden"
+          accept="application/pdf"
+        />
+
+        <button
+          id="uploadBtn"
+          class="btn btn-upload"
+          onclick="document.getElementById('fileInput').click()"
+        >
+          <span class="material-symbols-outlined">upload_file</span> Upload PDF
+        </button>
+
+        <button
+          id="micBtn"
+          class="btn btn-mic hidden"
+          onclick="toggleRecognition()"
+        >
+          <span class="material-symbols-outlined" id="micIcon">mic</span>
+          <span id="micText">Start Reciting</span>
+        </button>
+
+        <button
+          id="submitBtn"
+          class="btn btn-submit hidden"
+          onclick="stopRecitationManually()"
+        >
+          <span class="material-symbols-outlined">check_circle</span> Finish &
+          Score
+        </button>
+
+        <button
+          id="refreshBtn"
+          class="btn hidden"
+          onclick="window.location.reload()"
+          style="background: #636e72; color: white"
+        >
+          <span class="material-symbols-outlined">refresh</span> Reset
+        </button>
+      </div>
+    </div>
+
+  </body>
+</html>
