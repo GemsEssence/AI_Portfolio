@@ -413,6 +413,16 @@
         }
       }
 
+      function updateHighlight() {
+        document
+          .querySelectorAll(".word.current")
+          .forEach((el) => el.classList.remove("current"));
+        let next = document.getElementById(`word-${currentIndex}`);
+        if (next) {
+          next.classList.add("current");
+          next.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }
 
       document.getElementById("fileInput").onchange = async (e) => {
         const file = e.target.files[0];
@@ -467,7 +477,6 @@
       }
 
 
-
       function resetSession() {
         currentIndex = 0;
         wordStatusMap.clear();
@@ -478,7 +487,22 @@
           .classList.remove("reciting-mode");
       }
 
-   
+      function showStats() {
+        let correct = 0,
+          wrong = 0;
+        wordStatusMap.forEach((status) =>
+          status === "correct" ? correct++ : wrong++
+        );
+        const total = correct + wrong;
+        const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
+        document.getElementById(
+          "score-text"
+        ).innerText = `Accuracy: ${accuracy}%`;
+        document.getElementById(
+          "stats-text"
+        ).innerText = `✅ Correct: ${correct} | ❌ Errors: ${wrong}`;
+        document.getElementById("accuracy-box").classList.remove("hidden");
+      }
 
       function closeStatsAndReset() {
         resetSession();
