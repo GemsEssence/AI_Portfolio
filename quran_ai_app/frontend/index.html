@@ -11,7 +11,12 @@
   
   </head>
   <body>
-
+    <div id="loadingOverlay" class="hidden">
+      <div class="loader-content">
+        <div class="spinner"></div>
+        <p>Processing PDF...</p>
+      </div>
+    </div>
 
     <div class="chat-wrapper">
       <header>Quran Memorization Assistant</header>
@@ -87,5 +92,32 @@
       </div>
     </div>
 
+    <script>
+
+
+      document.getElementById("fileInput").onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        document.getElementById("loadingOverlay").classList.remove("hidden");
+        const fd = new FormData();
+        fd.append("file", file);
+        try {
+          const res = await fetch("/extract", { method: "POST", body: fd });
+          const data = await res.json();
+          if (data.status === "ok") {
+            docWords = data.words;
+          
+            document.getElementById("micBtn").classList.remove("hidden");
+            document.getElementById("refreshBtn").classList.remove("hidden");
+          }
+        } catch (err) {
+          alert("Error: " + err);
+        } finally {
+          document.getElementById("loadingOverlay").classList.add("hidden");
+        }
+      };
+
+
+    </script>
   </body>
 </html>
