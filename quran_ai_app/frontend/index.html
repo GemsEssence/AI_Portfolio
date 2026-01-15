@@ -353,6 +353,8 @@
       }
 
 
+  
+
       document.getElementById("fileInput").onchange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -383,6 +385,29 @@
         updateHighlight();
       }
 
+      function toggleRecognition() {
+        if (!isListening) {
+          // START RECITING
+          resetSession();
+          renderWords();
+          isListening = true;
+          lastProcessedWordCount = 0;
+          recognition.start();
+
+          // UI Changes
+          document
+            .getElementById("wordContainer")
+            .classList.add("reciting-mode");
+          document.getElementById("micBtn").classList.add("active");
+          document.getElementById("micText").innerText = "Listening...";
+
+          document.getElementById("submitBtn").classList.remove("hidden");
+          document.getElementById("uploadBtn").classList.add("hidden");
+          document.getElementById("refreshBtn").classList.add("hidden");
+        }
+      }
+
+ 
 
       function resetSession() {
         currentIndex = 0;
@@ -394,6 +419,12 @@
           .classList.remove("reciting-mode");
       }
 
+
+
+      function closeStatsAndReset() {
+        resetSession();
+        renderWords(); // This renders the words visible again for study
+      }
     </script>
   </body>
 </html>
