@@ -8,7 +8,6 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
     />
-  
   </head>
   <body>
     <div id="loadingOverlay" class="hidden">
@@ -106,7 +105,8 @@
           const data = await res.json();
           if (data.status === "ok") {
             docWords = data.words;
-          
+            resetSession();
+            renderWords();
             document.getElementById("micBtn").classList.remove("hidden");
             document.getElementById("refreshBtn").classList.remove("hidden");
           }
@@ -117,6 +117,24 @@
         }
       };
 
+      function renderWords() {
+        document.getElementById("wordContainer").innerHTML = docWords
+          .map((w, i) => `<span id="word-${i}" class="word">${w}</span>`)
+          .join("");
+        updateHighlight();
+      }
+
+     
+
+      function resetSession() {
+        currentIndex = 0;
+        wordStatusMap.clear();
+        lastProcessedWordCount = 0;
+        document.getElementById("accuracy-box").classList.add("hidden");
+        document
+          .getElementById("wordContainer")
+          .classList.remove("reciting-mode");
+      }
 
     </script>
   </body>
