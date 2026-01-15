@@ -353,7 +353,58 @@
       }
 
 
-  
+
+      function processWordOneByOne(spokenWord) {
+        if (currentIndex >= docWords.length) return;
+        const normalizedSpoken = normalizeArabic(spokenWord);
+        if (!normalizedSpoken) return;
+
+        while (currentIndex < docWords.length) {
+          const target = docWords[currentIndex];
+          if (target.match(/[﴿﴾\dۖۗ]/) || normalizeArabic(target) === "") {
+            currentIndex++;
+          } else {
+            break;
+          }
+        }
+
+        let foundAt = -1;
+        let lookAhead = 5;
+
+        for (let i = 0; i < lookAhead; i++) {
+          let checkIdx = currentIndex + i;
+          if (checkIdx < docWords.length) {
+            let target = normalizeArabic(docWords[checkIdx]);
+            if (
+              target === normalizedSpoken ||
+              target.includes(normalizedSpoken) ||
+              normalizedSpoken.includes(target)
+            ) {
+              foundAt = checkIdx;
+              break;
+            }
+          }
+        }
+
+        if (foundAt !== -1) {
+          for (let i = currentIndex; i < foundAt; i++) {
+            if (!wordStatusMap.has(i)) {
+              let el = document.getElementById(`word-${i}`);
+              if (el) el.className = "word wrong";
+              wordStatusMap.set(i, "wrong");
+            }
+          }
+          let currentEl = document.getElementById(`word-${foundAt}`);
+          if (currentEl) {
+            currentEl.className = "word correct";
+            wordStatusMap.set(foundAt, "correct");
+          }
+          currentIndex = foundAt + 1;
+          updateHighlight();
+        }
+      }
+
+    
 
       document.getElementById("fileInput").onchange = async (e) => {
         const file = e.target.files[0];
@@ -407,8 +458,7 @@
         }
       }
 
- 
-
+   
       function resetSession() {
         currentIndex = 0;
         wordStatusMap.clear();
@@ -419,8 +469,7 @@
           .classList.remove("reciting-mode");
       }
 
-
-
+  
       function closeStatsAndReset() {
         resetSession();
         renderWords(); // This renders the words visible again for study
