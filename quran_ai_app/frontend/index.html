@@ -316,6 +316,41 @@
     </div>
 
     <script>
+      let docWords = [];
+      let currentIndex = 0;
+      let recognition;
+      let isListening = false;
+      let wordStatusMap = new Map();
+      let lastProcessedWordCount = 0;
+
+      const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = "ar-SA";
+
+        recognition.onresult = (event) => {
+          const resultIndex = event.resultIndex;
+          const transcript = event.results[resultIndex][0].transcript.trim();
+          const wordsHeard = transcript.split(/\s+/);
+
+          if (event.results[resultIndex].isFinal) {
+            lastProcessedWordCount = 0;
+          }
+
+          for (let i = lastProcessedWordCount; i < wordsHeard.length; i++) {
+            processWordOneByOne(wordsHeard[i]);
+            lastProcessedWordCount++;
+          }
+        };
+
+        recognition.onend = () => {
+          if (isListening) recognition.start();
+        };
+      }
 
 
       document.getElementById("fileInput").onchange = async (e) => {
@@ -348,7 +383,6 @@
         updateHighlight();
       }
 
-     
 
       function resetSession() {
         currentIndex = 0;
