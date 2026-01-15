@@ -352,7 +352,16 @@
         };
       }
 
-
+      function normalizeArabic(text) {
+        if (!text) return "";
+        return text
+          .replace(/[\u064B-\u0652\u06D6-\u06ED]/g, "")
+          .replace(/[إأآٱ]/g, "ا")
+          .replace(/[ىي]/g, "ي")
+          .replace(/[^\u0621-\u064A]/g, "")
+          .trim()
+          .toLowerCase();
+      }
 
       function processWordOneByOne(spokenWord) {
         if (currentIndex >= docWords.length) return;
@@ -404,7 +413,6 @@
         }
       }
 
-    
 
       document.getElementById("fileInput").onchange = async (e) => {
         const file = e.target.files[0];
@@ -458,7 +466,8 @@
         }
       }
 
-   
+
+
       function resetSession() {
         currentIndex = 0;
         wordStatusMap.clear();
@@ -469,7 +478,8 @@
           .classList.remove("reciting-mode");
       }
 
-  
+   
+
       function closeStatsAndReset() {
         resetSession();
         renderWords(); // This renders the words visible again for study
