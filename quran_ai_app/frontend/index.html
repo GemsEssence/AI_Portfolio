@@ -476,6 +476,19 @@
         }
       }
 
+      function stopRecitationManually() {
+        isListening = false;
+        recognition.stop();
+        document.getElementById("micBtn").classList.remove("active");
+        document.getElementById("micText").innerText = "Start Reciting";
+
+        document.getElementById("submitBtn").classList.add("hidden");
+        document.getElementById("uploadBtn").classList.remove("hidden");
+        document.getElementById("refreshBtn").classList.remove("hidden");
+
+        // Show Stats
+        setTimeout(showStats, 300);
+      }
 
       function resetSession() {
         currentIndex = 0;
