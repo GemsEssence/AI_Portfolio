@@ -37,22 +37,26 @@ async function uploadImage() {
         });
 
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
         const data = await response.json();
         console.log("Response from backend:", data);
-
         // 3️⃣ Hide loading
         loadingDiv.style.display = "none";
 
-
+        if (data.is_fashion === false) {
+          const warnMsg = document.createElement("div");
+          warnMsg.className = "message bot";
+          warnMsg.textContent = "👗 I am a fashion bot. I only recommend clothing and fashion items.";
+          chatBox.appendChild(warnMsg);
+          chatBox.scrollTop = chatBox.scrollHeight;
+          return;
+        }
         // 4️⃣ Show products
-        if (data.products && data.products.length > 0) {
+        else if (data.products && data.products.length > 0) {
             const rowDiv = document.createElement("div");
             rowDiv.className = "product-card-row";
             data.products.forEach(p => {
                 const prodMsg = document.createElement("div");
                 prodMsg.className = "message bot product-card";
-
                 prodMsg.innerHTML = `
                     <img src="${p.thumbnail || '/static/img/placeholder.png'}" alt="${p.title}">
                     <div style="margin-left:10px;">
@@ -60,7 +64,7 @@ async function uploadImage() {
                         <span style="color:#ff4081;">${p.price || "N/A"}</span><br>
                         <a href="${p.link}" target="_blank">View Product</a>
                     </div>
-                `;
+                `;          
 
                 rowDiv.appendChild(prodMsg);
             });
@@ -71,9 +75,7 @@ async function uploadImage() {
             noResultMsg.textContent = "❌ No products found.";
             chatBox.appendChild(noResultMsg);
         }
-
         chatBox.scrollTop = chatBox.scrollHeight;
-
     } catch (error) {
         loadingDiv.style.display = "none";
         const errorMsg = document.createElement("div");
@@ -91,13 +93,10 @@ function refreshChat() {
 
     // Clear chat messages
     chatBox.innerHTML = "";
-
     // Clear file input
     fileInput.value = "";
-
     // Hide loading
     loadingDiv.style.display = "none";
-
     // Optionally, scroll to bottom
     chatBox.scrollTop = chatBox.scrollHeight;
 }
