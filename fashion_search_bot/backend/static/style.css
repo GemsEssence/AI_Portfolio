@@ -50,7 +50,7 @@
     line-height: 1.5;
     word-wrap: break-word;
     animation: fadeIn 0.3s ease-in-out;
-    font-size: 14px;
+    font-size: 16px;
   }
 
   .message.user {
