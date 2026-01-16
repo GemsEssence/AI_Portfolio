@@ -1,16 +1,15 @@
 # Core dependencies
-fastapi==0.111.1
-uvicorn==0.23.2
-jinja2==3.1.6
-python-dotenv==1.0.1
-requests==2.32.5
-
+fastapi
+uvicorn
+jinja2
+python-dotenv
+requests
+python-multipart
 # Image processing & numerical operations
-Pillow==11.3.0
-numpy==2.3.3
-torch  # Install the latest compatible version for your system
-transformers  # For BLIP or other transformer models
+Pillow
+numpy
+torch  
+transformers  
 
-# AI / ML utilities
-ultralytics  # YOLO if needed
-serpapi  # For scraping search results (SerpApi Python SDK)
+ultralytics  
+serpapi 
