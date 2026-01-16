@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 from .services.caption import generate_caption_and_features
 from .services.search import search_products
 from .services.vector_search import filter_similar_products
+from .services.fashion_guard import is_fashion_item
+
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -39,6 +41,13 @@ async def upload_dress(file: UploadFile = File(...)):
         # Generate caption (optional: you can display it)
         description, image_features = generate_caption_and_features(image_bytes)
         # print(f"Generated caption: {description}")
+        
+        if not description or not is_fashion_item(description):
+            return JSONResponse({
+                "is_fashion": False,
+                "message": "I am a fashion bot. I only recommend clothing and fashion items.",
+                "products": []
+            })
 
         # Search products based on caption
         scraped_products = search_products(description, limit=10)
