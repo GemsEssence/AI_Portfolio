@@ -10,14 +10,14 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"[INFO] Device: {device}")
 
 # YOLO segmentation model (dress detection)
-yolo_model = YOLO("yolov8n-seg.pt")  # lightweight
+yolo_model = YOLO("yolov8l-seg.pt")  # lightweight
 
 # BLIP for base captioning
-caption_processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
-caption_model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base").to(device)
+caption_processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-large")
+caption_model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-large").to(device)
 
 # Instruction-following LLM (small)
-llm_model_name = "google/flan-t5-small"
+llm_model_name = "google/flan-t5-large"
 tokenizer = AutoTokenizer.from_pretrained(llm_model_name)
 llm_model = AutoModelForSeq2SeqLM.from_pretrained(llm_model_name).to(device)
 llm_pipeline = pipeline(
@@ -27,9 +27,10 @@ llm_pipeline = pipeline(
     device=0 if device=="cuda" else -1
 )
 
-# --- Crop dress using YOLO ---
+# # --- Crop dress using YOLO ---
 def crop_dress(image: Image.Image):
     results = yolo_model.predict(np.array(image), verbose=False)
+    # print(results,"results------------------------------->")
     for r in results:
         if r.masks is not None and len(r.masks.data) > 0:
             mask = r.masks.data[0].cpu().numpy()
@@ -50,24 +51,42 @@ def generate_caption_and_features(image_bytes: bytes):
         # Crop dress only
         dress_image = crop_dress(image)
         
-        # print(dress_image,"dressImage------------------------------->")
+        print(dress_image,"dressImage------------------------------->")
 
         # BLIP caption on cropped dress
         inputs = caption_processor(images=dress_image, return_tensors="pt").to(device)
         out = caption_model.generate(**inputs, max_length=50)
         base_caption = caption_processor.decode(out[0], skip_special_tokens=True)
-        # print(f"[DEBUG] BLIP base caption (cropped): {base_caption}")
+        print(f"[DEBUG] BLIP base caption (cropped): {base_caption}")
 
         # Refine with instruction-following LLM
+        # prompt = (
+        #     "You are a professional fashion product describer for an online store. "
+        #     "Example:Describe ONLY the clothing item — not the person, gender, or background. "
+        #     "Example:Focus purely on garment type, fabric, pattern, design, embroidery, style, and occasion. "
+        #     "Example:Avoid words like 'person', 'man', 'woman', 'girl', 'animal, 'bird', 'boy', 'model', 'wearing', 'standing', etc. "
+        #     "Example:Describe it as if it is displayed alone on a plain background.\n\n"
+        #     f"Caption: \"{base_caption}\""
+        # )
+        # prompt = (
+        #     "Task: Extract only 2-3 essential clothing keywords (fabric, color, style).\n"
+        #     "Example:Focus purely on garment type, fabric, pattern, design, embroidery, style, and occasion.\n"
+        #     "Strictly remove all non-clothing words.\n"
+        #     f"Input: '{base_caption}'\n"
+        #     "Output:"
+        # )
+       # Use clear Input/Output pairs to guide the model
         prompt = (
-            "You are a professional fashion product describer for an online store. "
-            "Describe ONLY the clothing item — not the person, gender, or background. "
-            "Focus purely on garment type, fabric, pattern, design, embroidery, style, and occasion. "
-            "Avoid words like 'person', 'man', 'woman', 'girl', 'boy', 'model', 'wearing', 'standing', etc. "
-            "Describe it as if it is displayed alone on a plain background.\n\n"
-            f"Caption: \"{base_caption}\""
+            "Task: Convert an image description into a specific clothing search query. "
+            "Include only color, fabric, pattern, and garment type. "
+            "Strictly remove people, actions, and background objects.\n\n"
+            "Example 1: 'a woman in a blue dress holding an umbrella' -> 'blue floral tiered dress'\n"
+            "Example 2: 'a man riding a skateboard in a red shirt' -> 'red button-down shirt'\n"
+            "Example 3: 'close up of a dress with a polka dot pattern' -> 'polka dot pattern dress'\n"
+            f"Input: '{base_caption}'\n"
+            "Output:"
         )
-        refined_caption = llm_pipeline(prompt, max_new_tokens=80, do_sample=False)[0]["generated_text"].strip()
+        refined_caption = llm_pipeline(prompt, max_new_tokens=120, do_sample=False)[0]["generated_text"].strip()
         if not refined_caption:
             refined_caption = base_caption
         print(f"[DEBUG] Refined dress caption: {refined_caption}")
