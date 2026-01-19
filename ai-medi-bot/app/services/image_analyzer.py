@@ -6,14 +6,19 @@ import json
 import re
 from PIL import Image, ImageDraw, ImageFilter
 from fastapi import UploadFile
-import google.generativeai as genai
+# import google.generativeai as genai
+from google import genai
+from google.genai import types
+
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
 
 # Configure Gemini API
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+# genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+
 
 # Heatmap directory setup
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -54,7 +59,7 @@ async def analyze_image_async(file: UploadFile, lang: str = "en") -> dict:
 
     try:
         # Step 2️⃣ - Initialize Gemini model
-        model = genai.GenerativeModel("gemini-2.5-flash")
+        # model = genai.GenerativeModel("gemini-2.5-flash")
 
         # Convert image to bytes
         img_bytes = io.BytesIO()
@@ -68,11 +73,21 @@ async def analyze_image_async(file: UploadFile, lang: str = "en") -> dict:
             "If the image shows a full human face (forehead, eyes, nose, mouth, and chin all visible), respond 'full_face'. "
             "If the face is cropped, only partly visible, or focused on a diseased area, respond 'partial_face'. "
             "Return only one word with no explanation."
-        )
+        )   
 
-        check_response = model.generate_content(
-            [{"role": "user", "parts": [check_prompt, {"mime_type": "image/png", "data": img_data}]}],
-            generation_config={"temperature": 0.1},
+        # check_response = model.generate_content(
+        #     [{"role": "user", "parts": [check_prompt, {"mime_type": "image/png", "data": img_data}]}],
+        #     generation_config={"temperature": 0.1},
+        # )
+        check_response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=[
+            check_prompt,
+            types.Part.from_bytes(data=img_data, mime_type="image/png")
+        ],
+        config=types.GenerateContentConfig(
+            temperature=0.7
+        )
         )
         import time
         time.sleep(15)
@@ -88,8 +103,8 @@ async def analyze_image_async(file: UploadFile, lang: str = "en") -> dict:
                 "heatmap": f"/static/heatmaps/{out_name}",
                 "doctor_response": {
                     "message": (
-                        "⚠️ For privacy and data protection, please upload only the affected area "
-                        "(e.g., cheek patch, eye area, or lip region). "
+                        "⚠️ For privacy and data protection, please upload only the affected area"
+                        "(e.g., cheek patch, eye area, or lip region)."
                         "Full-face images are not allowed for HIPAA/GDPR compliance."
                     )
                 },
@@ -129,11 +144,21 @@ async def analyze_image_async(file: UploadFile, lang: str = "en") -> dict:
                             - No antibiotics, steroids, or prescription drugs.
                             """
 
-        diagnosis_response = model.generate_content(
-            [{"role": "user", "parts": [diagnosis_prompt, {"mime_type": "image/png", "data": img_data}]}],
-            generation_config={"temperature": 0.7},
+        # diagnosis_response = model.generate_content(
+        #     [{"role": "user", "parts": [diagnosis_prompt, {"mime_type": "image/png", "data": img_data}]}],
+        #     generation_config={"temperature": 0.7},
+        # )
+        
+        diagnosis_response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[
+                diagnosis_prompt,
+                types.Part.from_bytes(data=img_data, mime_type="image/png")
+            ],
+            config=types.GenerateContentConfig(
+                temperature=0.7
+            )
         )
-
         raw_text = (diagnosis_response.text or "").strip()
         print(f"[DEBUG] Raw Gemini Response: {raw_text[:200]}...")
 

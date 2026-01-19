@@ -1,11 +1,14 @@
-import google.generativeai as genai
+# import google.generativeai as genai
+from google import genai
+from google.genai import types 
 import os
 from dotenv import load_dotenv
 from google.api_core.exceptions import ResourceExhausted
 
 # Load environment variables and configure API (already done in main app)
 load_dotenv()
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+# genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 
 # Simple in-memory session store
 conversation_memory = {}
@@ -36,7 +39,7 @@ async def process_text(session_id: str, text: str) -> str:
     is_medicine_request = any(k in text_lower for k in medicine_keywords)
 
     # 🛑 CRITICAL FIX: Change to the working model
-    model = genai.GenerativeModel("gemini-2.5-flash")
+    # model = genai.GenerativeModel("gemini-2.5-flash")
 
     # --- Step 2: Custom prompt for medicine suggestions ---
     if is_medicine_request:
@@ -75,8 +78,18 @@ async def process_text(session_id: str, text: str) -> str:
         """
 
     try:
-        response = model.generate_content(prompt)
+        # response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[prompt],
+            config=types.GenerateContentConfig(
+                temperature=0.7
+            )
+        )
         reply = response.text.strip()
+        # reply = (response.text or "").strip()
+        print(f"[DEBUG] Gemini Response: {reply[:200]}...")
+
         
     except ResourceExhausted as e:
         # ✅ Handle 429 Quota Exceeded error specifically
