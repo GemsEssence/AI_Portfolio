@@ -4,9 +4,9 @@ jinja2
 transformers
 torch
 pillow
-openai
 python-dotenv
 python-multipart
 google-generativeai
+googletrans
 
 
