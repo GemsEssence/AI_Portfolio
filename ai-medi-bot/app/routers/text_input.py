@@ -39,7 +39,7 @@ async def chat_with_bot(
         print(f"[INFO] Chat received — Session: {session_id}, Lang: {lang}, Text: {text}")
 
         # ✅ Step 1: Translate user input → English
-        translated_input = translate_text(text, "en")
+        translated_input = await translate_text(text, "en")
         print(f"[DEBUG] Translated input: {translated_input}")
 
         # ✅ Step 2: Get response from NLP model
@@ -47,7 +47,7 @@ async def chat_with_bot(
         print("[DEBUG] Model response (EN):", response)
 
         # ✅ Step 3: Translate AI response → selected language
-        final_response = translate_text(response, lang)
+        final_response = await translate_text(response, lang)
         print("[DEBUG] Final translated response:", final_response)
 
         return {"response": final_response}

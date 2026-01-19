@@ -23,9 +23,14 @@ async def analyze_image(
     if lang and lang.lower() != "en" and isinstance(doctor_reply, dict):
         for key, value in doctor_reply.items():
             if isinstance(value, str):
-                doctor_reply[key] = translate_text(value, lang)
+                doctor_reply[key] = await translate_text(value, lang)
+
             elif isinstance(value, list):
-                doctor_reply[key] = [translate_text(v, lang) for v in value]
+                translated_list = []
+                for v in value:
+                    translated_list.append(await translate_text(v, lang))
+                doctor_reply[key] = translated_list
+
 
     # Step 4️⃣ — Return translated + original data
     result["doctor_response"] = doctor_reply
