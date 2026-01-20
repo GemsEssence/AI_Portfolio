@@ -47,8 +47,10 @@ for APP in "${!APPS[@]}"; do
     # Run the command in the background
     if [[ $CMD == streamlit* ]]; then
         $CMD --server.port "$PORT" &
+        # $CMD --server.address 192.168.1.51 --server.port "$PORT" &
     else
         $CMD --port "$PORT" &
+        # $CMD --host 192.168.1.51 --port "$PORT" &
     fi
     
     sleep 2
@@ -67,9 +69,13 @@ fi
 
 echo "🚀 Launching Dashboard..."
 uvicorn main:app --reload --port "$DASH_PORT" &
+# uvicorn main:app --reload --host 192.168.1.51 --port "$DASH_PORT" &
+
 
 # Open dashboard in browser after short delay
 sleep 5
 xdg-open "http://127.0.0.1:$DASH_PORT"
+# xdg-open "http://192.168.1.51:$DASH_PORT"
 
+# echo "✅ All apps started! Dashboard opened at http://192.168.1.51:$DASH_PORT"
 echo "✅ All apps started! Dashboard opened at http://127.0.0.1:$DASH_PORT"
