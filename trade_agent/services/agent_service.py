@@ -66,7 +66,7 @@ def get_db_schema():
 
     shipments(
         id, bill_of_lading_no, shipment_type, mode, date,
-        hs_code, product_description,
+        hs_code, shipment_description,
         product_id,
         quantity, quantity_unit, weight_kg, value_usd,
         origin_country, destination_country,

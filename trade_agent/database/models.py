@@ -94,7 +94,7 @@ class Shipment(Base):
     shipment_type = Column(Text)
     date = Column(Date)
     hs_code = Column(Text)
-    product_description = Column(Text)
+    shipment_description = Column(Text)
 
     product_id = Column(Integer, ForeignKey("products.id", ondelete="SET NULL"))
 

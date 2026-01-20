@@ -124,7 +124,7 @@ CREATE TABLE shipments (
     shipment_type TEXT,
     date DATE,
     hs_code TEXT,
-    product_description TEXT,
+    shipment_description TEXT,
     quantity NUMERIC,
     quantity_unit TEXT,
     weight_kg NUMERIC,

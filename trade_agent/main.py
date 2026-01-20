@@ -159,14 +159,14 @@ def search_shipments(body: SearchRequest):
     db = SessionLocal()
     query_text = body.query.lower()
     results = db.query(Shipment).filter(
-        Shipment.product_description.ilike(f"%{query_text}%")
+        Shipment.shipment_description.ilike(f"%{query_text}%")
     ).limit(10).all()
 
     data = [
         {
             "Bill of Lading No": r.bill_of_lading,
             "Date": r.date.strftime("%Y-%m-%d"),
-            "Product": r.product_description,
+            "Product": r.shipment_description,
             "Quantity": r.quantity,
             "Unit": r.unit,
             "Value (USD)": r.value,

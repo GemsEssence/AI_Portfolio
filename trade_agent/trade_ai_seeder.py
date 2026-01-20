@@ -417,7 +417,7 @@ for _ in range(200):
     port_of_loading = random.choice(ports_ids)
     port_of_discharge = random.choice(ports_ids)
     cur.execute("""
-        INSERT INTO shipments (bill_of_lading_no, shipment_type, date, hs_code, product_description, product_id,
+        INSERT INTO shipments (bill_of_lading_no, shipment_type, date, hs_code, shipment_description, product_id,
                                quantity, quantity_unit, weight_kg, value_usd, origin_country, destination_country,
                                port_of_loading, port_of_discharge, mode, container_count, carrier_name, supplier_id,
                                buyer_id, shipment_status, expected_delivery_date, tracking_url)
