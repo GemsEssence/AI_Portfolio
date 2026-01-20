@@ -151,5 +151,14 @@
         "origin": "Zebras are native to Africa, with three main species: the plains zebra, the Grevy's zebra, and the mountain zebra. They have been part of African culture and wildlife for centuries.",
         "summary": "Zebras are iconic striped animals native to Africa, known for their social behavior and ecological significance.",
         "question": "Would you like to know more about this zebra?"
+    },
+    "bottle": {
+        "name": "Bottle",
+        "description": "A bottle is a container, typically made of glass or plastic, used for storing liquids. It usually has a narrow neck and a mouth that can be sealed with a cap or cork. Bottles come in various shapes and sizes, designed for different purposes, from beverages to chemicals.",
+        "usage": "Bottles are commonly used for packaging drinks like water, soda, and alcoholic beverages, as well as for household products like cleaning supplies and personal care items.",
+        "benefits": "Bottles are essential for preserving the freshness of liquids, preventing contamination, and providing a convenient way to transport and consume beverages. They also facilitate portion control and reduce waste through reusability.",
+        "origin": "The use of bottles dates back to ancient civilizations, with early examples made from materials like clay and glass. Over time, advancements in materials and manufacturing have led to the wide variety of bottles we see today.",
+        "summary": "Bottles are versatile containers for liquids, crucial for storage, transport, and consumption.",
+        "question": "Would you like to know more about this bottle?"
     }
 }
