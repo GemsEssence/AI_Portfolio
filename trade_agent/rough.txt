@@ -31,3 +31,20 @@ trade_intel_app/
     .hero h1 { font-size:52px; font-weight:800; color:#0d1b3d; }
     .ai-text { color:#2a55ff; }
     .hero p { font-size:20px; margin-top:12px; opacity:0.8; max-width:800px; margin:auto; }
+
+
+    TRUNCATE TABLE
+buyers,
+carbon_emissions,
+containers,
+invoices,
+payments,
+port_congestion,
+ports,
+products,
+shipment_events,
+shipments,
+shipping_routes,
+suppliers,
+vessel_tracking
+RESTART IDENTITY CASCADE;
